@@ -2,9 +2,12 @@
 
 public class Users
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
+    public string Username { get; set; }
     public string Mail { get; set; }
-    public string Password { get; set; }
+    public string PasswordHash{ get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
     public ICollection<Rentals> Rentals { get; set; } = new List<Rentals>();
 
 }

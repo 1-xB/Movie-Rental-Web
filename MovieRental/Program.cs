@@ -1,4 +1,11 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MovieRental.Data;
+using MovieRental.Endpoints;
+using MovieRental.Services;
+using Scalar.AspNetCore;
 
 namespace MovieRental
 {
@@ -8,17 +15,60 @@ namespace MovieRental
         {
             var builder = WebApplication.CreateBuilder(args);
             
-            // Connect to the database
-            const string connectionString = "Data Source=movie-rental.db"; // TODO - Update this connection string
-            builder.Services.AddSqlite<DatabaseContext>(connectionString);
+            builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieRental API", Version = "v1" });
+            });
+            
+            builder.Services.AddSqlite<DatabaseContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["AppSettings:Audience"],
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)
+                        ),
+                    ValidateIssuerSigningKey = true
+                    
+                };
+            });
+
+            builder.Services.AddAuthorization();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             
             var app = builder.Build();
+
+            app.MapAuthRoutes();
             
-            app.MapGet("/", () => "Hello World!");
+            // Użyj OpenAPI
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRental API v1");
+                });
+                app.MapOpenApi();
+                app.MapScalarApiReference();
+            }
 
             await app.MigrateDbAsync();
+            
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }
