@@ -27,6 +27,7 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
         user.Username = request.Username;
         user.Mail = request.Mail;
         user.PasswordHash = hashedPassword;
+        user.Role = "Client";
         
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
@@ -78,7 +79,8 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Email, user.Mail)
+            new Claim(ClaimTypes.Email, user.Mail),
+            new Claim(ClaimTypes.Role, user.Role)
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);

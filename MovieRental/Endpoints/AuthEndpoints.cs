@@ -21,18 +21,11 @@ public static class AuthEndpoints
         group.MapPost("/login", async (IAuthService authService, UserLoginDto request) =>
         {
             var response = await authService.LoginAsync(request);
-            if (response is null)
-            {
-                return Results.BadRequest("Login or Password is wrong!");
-            }
-
-            return Results.Ok(response);
+            return response is null ? Results.BadRequest("Login or Password is wrong!") : Results.Ok(response);
         });
 
-        group.MapGet("/", [Authorize](HttpContext httpContext) =>
-        {
-            return Results.Ok("You are authenticated!");
-        });
+        group.MapGet("/", [Authorize](HttpContext httpContext) => Results.Ok("You are authenticated!"));
+        group.MapGet("/admin-only", [Authorize(Roles = "Admin")](HttpContext httpContext) => Results.Ok("Hi admin!"));
         
         
         return group;

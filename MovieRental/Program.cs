@@ -47,6 +47,7 @@ namespace MovieRental
             var app = builder.Build();
 
             app.MapAuthRoutes();
+            app.MapMovieRoutes();
             
             // Użyj OpenAPI
             if (app.Environment.IsDevelopment())
