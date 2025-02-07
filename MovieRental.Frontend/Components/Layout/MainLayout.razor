@@ -1,9 +1,30 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+<div class="main-layout">
+    <header>
+        <h1>Movie Rental</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Homepage</a></li>
+                <li><a href="/movies">Movies</a></li>
+                <li><a href="/genres">Genres</a></li>
+                <li><a href="/about">About</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons">
+            <a href="/login">Log in</a>
+            <a href="/register">Sign up</a>
+        </div>
+    </header>
+
+    <main>
+        @Body
+    </main>
+    
+</div>
 
 <div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
+    An unhandled error occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>

@@ -1,0 +1,47 @@
+﻿@page "/register"
+@using MovieRental.Frontend.Models
+@rendermode InteractiveServer
+
+
+<h3>Register</h3>
+
+<EditForm FormName="RegisterForm" Model="RegisterModel" OnValidSubmit="HandleSubmitAsync" Enhance>
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="username" class="form-label">Username:</label>
+        <InputText class="form-control" id="username" @bind-Value="RegisterModel.Username" autocomplete="username" placeholder="Enter your username"></InputText>
+        <ValidationMessage For="@(() => RegisterModel.Username)"/>
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <InputText class="form-control" id="email" @bind-Value="RegisterModel.Mail" type="email" aria-describedby="emailHelp" autocomplete="email" placeholder="Enter your email"></InputText>
+        <ValidationMessage For="@(() => RegisterModel.Mail)"/>
+        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">Password:</label>
+        <InputText class="form-control" id="password" @bind-Value="RegisterModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
+        <ValidationMessage For="@(() => RegisterModel.Password)"/>
+    </div>
+
+    <div class="mb-3">
+        <label for="password-confirm" class="form-label">Confirm password:</label>
+        <InputText class="form-control" id="password-confirm" @bind-Value="RegisterModel.ConfirmPassword" type="password" autocomplete="new-password" placeholder="Confirm your password"></InputText>
+        <ValidationMessage For="@(() => RegisterModel.ConfirmPassword)"/>
+    </div>
+
+    <button type="submit" class="btn btn-primary" aria-label="Register">Register</button>
+
+</EditForm>
+
+@code {
+    public RegisterModel? RegisterModel { get; set; } = new RegisterModel();
+
+    private async Task HandleSubmitAsync()
+    {
+        
+    }
+}

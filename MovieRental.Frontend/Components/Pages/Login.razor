@@ -1,0 +1,32 @@
+﻿@page "/login"
+@using MovieRental.Frontend.Models
+
+<h3>Login</h3>
+
+<EditForm FormName="LoginForm" Model="LoginModel" OnValidSubmit="HandleSubmitAsync" Enhance>
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="username" class="form-label">Username:</label>
+        <InputText class="form-control" id="username" @bind-Value="LoginModel.UsernameOrMail" autocomplete="username" placeholder="Enter your username / email"></InputText>
+        <ValidationMessage For="@(() => LoginModel.UsernameOrMail)"/>
+    </div>
+    
+    <div class="mb-3">
+        <label for="password" class="form-label">Password:</label>
+        <InputText class="form-control" id="password" @bind-Value="LoginModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
+        <ValidationMessage For="@(() => LoginModel.Password)"/>
+    </div>
+    
+    <button type="submit" class="btn btn-primary" aria-label="Login">Login</button>
+
+</EditForm>
+
+@code {
+    public LoginModel LoginModel { get; set; } = new();
+    
+    private async Task HandleSubmitAsync()
+    {
+        
+    }
+}
