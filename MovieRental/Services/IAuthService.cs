@@ -1,4 +1,5 @@
 ﻿using Auth_course.Entity.Models;
+using MovieRental.Dtos;
 using MovieRental.Entity;
 
 namespace MovieRental.Services;

@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MovieRental.Frontend.Components;
+using MovieRental.Frontend.Services;
 
 namespace MovieRental.Frontend
 {
@@ -11,6 +14,8 @@ namespace MovieRental.Frontend
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7242") });
+            builder.Services.AddScoped<UserService>();
 
             var app = builder.Build();
 

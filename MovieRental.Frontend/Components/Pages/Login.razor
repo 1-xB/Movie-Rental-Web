@@ -1,32 +1,50 @@
 ﻿@page "/login"
+@using MovieRental.Frontend.Dtos
 @using MovieRental.Frontend.Models
+@using MovieRental.Frontend.Services
+@inject UserService UserService
+@rendermode InteractiveServer
 
 <h3>Login</h3>
 
-<EditForm FormName="LoginForm" Model="LoginModel" OnValidSubmit="HandleSubmitAsync" Enhance>
-    <ValidationSummary />
+<EditForm FormName="LoginForm" Model="@LoginModel" OnValidSubmit="HandleSubmitAsync" Enhance>
+    <DataAnnotationsValidator />
+    <ValidationSummary/>
 
     <div class="mb-3">
         <label for="username" class="form-label">Username:</label>
-        <InputText class="form-control" id="username" @bind-Value="LoginModel.UsernameOrMail" autocomplete="username" placeholder="Enter your username / email"></InputText>
+        <InputText class="form-control" id="username" @bind-Value="@LoginModel.UsernameOrMail" autocomplete="username" placeholder="Enter your username / email"></InputText>
         <ValidationMessage For="@(() => LoginModel.UsernameOrMail)"/>
     </div>
-    
+
     <div class="mb-3">
         <label for="password" class="form-label">Password:</label>
-        <InputText class="form-control" id="password" @bind-Value="LoginModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
+        <InputText class="form-control" id="password" @bind-Value="@LoginModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
         <ValidationMessage For="@(() => LoginModel.Password)"/>
     </div>
-    
+
+    @if (ServerMessage is not null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ServerMessage
+        </div>
+    }
+
     <button type="submit" class="btn btn-primary" aria-label="Login">Login</button>
 
 </EditForm>
 
 @code {
-    public LoginModel LoginModel { get; set; } = new();
+    private LoginModel LoginModel { get; set; } = new();
+    private string? ServerMessage { get; set; }
     
     private async Task HandleSubmitAsync()
     {
-        
+        var user = new LoginUserDto
+        {
+            UsernameOrMail = LoginModel.UsernameOrMail,
+            Password = LoginModel.Password
+        };
+        ServerMessage = await UserService.LoginUserAsync(user);
     }
 }

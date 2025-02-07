@@ -1,4 +1,4 @@
-﻿namespace Auth_course.Entity.Models
+﻿namespace MovieRental.Dtos
 {
     public class TokenResponseDto
     {

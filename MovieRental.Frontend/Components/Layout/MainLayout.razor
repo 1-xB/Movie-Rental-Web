@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+
 
 <div class="main-layout">
     <header>
@@ -12,8 +15,16 @@
             </ul>
         </nav>
         <div class="auth-buttons">
-            <a href="/login">Log in</a>
-            <a href="/register">Sign up</a>
+            @if (!isUserAuthenticated)
+            {
+                <a href="/login">Log in</a>
+                <a href="/register">Sign up</a>
+            }
+            else
+            {
+                <p>@Username</p>   
+            }
+            
         </div>
     </header>
 
@@ -28,3 +39,23 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+
+    private bool isUserAuthenticated;
+    private string? Username;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isUserAuthenticated = await IsUserAuthenticatedAsync();
+        
+    }
+
+    private async Task<bool> IsUserAuthenticatedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        Username = authState.User.Identity.Name;
+        Console.WriteLine(Username);
+        return authState.User.Identity.IsAuthenticated;
+    }
+}

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MovieRental.Data;
+using MovieRental.Dtos;
 using MovieRental.Entity;
 
 namespace MovieRental.Services;
@@ -19,7 +20,6 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
         {
             return null;
         }
-
         var user = new Users();
 
         var hashedPassword = new PasswordHasher<Users>().HashPassword(user, request.Password);
@@ -42,12 +42,15 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
         {
             return null;
         }
-        
+
+        Console.WriteLine("znaleziono ziuta");
         if (new PasswordHasher<Users>().VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
         {
+            Console.WriteLine("zle haslo");
             return null;
         }
 
+        Console.WriteLine("dobre haslo");
         return await CreateTokenResponse(user);
     }
 

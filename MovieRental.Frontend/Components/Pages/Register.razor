@@ -1,29 +1,34 @@
 ﻿@page "/register"
+@using MovieRental.Frontend.Dtos
 @using MovieRental.Frontend.Models
+@using MovieRental.Frontend.Services
+@inject UserService UserService
 @rendermode InteractiveServer
+
 
 
 <h3>Register</h3>
 
-<EditForm FormName="RegisterForm" Model="RegisterModel" OnValidSubmit="HandleSubmitAsync" Enhance>
-    <ValidationSummary />
+<EditForm FormName="RegisterForm" Model="@RegisterModel" OnValidSubmit="HandleSubmitAsync" Enhance>
+    <DataAnnotationsValidator />
+    <ValidationSummary/>
 
     <div class="mb-3">
         <label for="username" class="form-label">Username:</label>
-        <InputText class="form-control" id="username" @bind-Value="RegisterModel.Username" autocomplete="username" placeholder="Enter your username"></InputText>
+        <InputText class="form-control" id="username" @bind-Value="@RegisterModel.Username" autocomplete="username" placeholder="Enter your username"></InputText>
         <ValidationMessage For="@(() => RegisterModel.Username)"/>
     </div>
 
     <div class="mb-3">
         <label for="email" class="form-label">Email:</label>
-        <InputText class="form-control" id="email" @bind-Value="RegisterModel.Mail" type="email" aria-describedby="emailHelp" autocomplete="email" placeholder="Enter your email"></InputText>
-        <ValidationMessage For="@(() => RegisterModel.Mail)"/>
+        <InputText class="form-control" id="email" @bind-Value="@RegisterModel.Mail" type="email" aria-describedby="emailHelp" autocomplete="email" placeholder="Enter your email"></InputText>
+        <ValidationMessage For="@(() => @RegisterModel.Mail)"/>
         <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
     </div>
 
     <div class="mb-3">
         <label for="password" class="form-label">Password:</label>
-        <InputText class="form-control" id="password" @bind-Value="RegisterModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
+        <InputText class="form-control" id="password" @bind-Value="@RegisterModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
         <ValidationMessage For="@(() => RegisterModel.Password)"/>
     </div>
 
@@ -33,15 +38,36 @@
         <ValidationMessage For="@(() => RegisterModel.ConfirmPassword)"/>
     </div>
 
+    @if (ServerMessage is not null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ServerMessage
+        </div>
+    }
+
     <button type="submit" class="btn btn-primary" aria-label="Register">Register</button>
 
 </EditForm>
 
 @code {
     public RegisterModel? RegisterModel { get; set; } = new RegisterModel();
+    private string? ServerMessage { get; set; }
 
     private async Task HandleSubmitAsync()
     {
-        
+        try
+        {
+            var user = new RegisterUserDto
+            {
+                Username = RegisterModel.Username,
+                Mail = RegisterModel.Mail,
+                Password = RegisterModel.Password
+            };
+            ServerMessage = await UserService.RegisterUserAsync(user);
+        }
+        catch (Exception ex)
+        {
+            ServerMessage = $"An error occurred : {ex.Message}";
+        }
     }
 }

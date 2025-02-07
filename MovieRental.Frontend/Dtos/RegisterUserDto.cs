@@ -1,6 +1,6 @@
-﻿namespace MovieRental.Dtos;
+﻿namespace MovieRental.Frontend.Dtos;
 
-public class UserRegisterDto
+public class RegisterUserDto
 {
     public required string Username { get; set; }
     public required string Mail { get; set; }
