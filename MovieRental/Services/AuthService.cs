@@ -56,7 +56,7 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
 
     public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
     {
-        var user = await ValidateRefreshTokenAsync(request.UserId, request.RefreshToken);
+        var user = await ValidateRefreshTokenAsync(request.RefreshToken);
         if (user == null)
         {
             return null;
@@ -64,9 +64,9 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
 
         return await CreateTokenResponse(user);
     }
-    private async Task<Users?> ValidateRefreshTokenAsync(Guid userId, string refreshToken)
+    private async Task<Users?> ValidateRefreshTokenAsync(string refreshToken)
     {
-        var user = await context.Users.FindAsync(userId);
+        var user = await context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
         if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
             return null;
@@ -124,7 +124,6 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
         {
             AccessToken = CreateToken(user),
             RefreshToken = await GenerateAndSaveRefreshTokenAsync(user),
-            UserId = user.Id
         };
     }
 

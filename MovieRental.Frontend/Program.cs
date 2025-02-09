@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using MovieRental.Frontend.Components;
 using MovieRental.Frontend.Services;
@@ -16,6 +17,11 @@ namespace MovieRental.Frontend
                 .AddInteractiveServerComponents();
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7242") });
             builder.Services.AddScoped<UserService>();
+            
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+            
+            builder.Services.AddAuthenticationCore();
 
             var app = builder.Build();
 

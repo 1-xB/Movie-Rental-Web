@@ -28,6 +28,11 @@ public static class AuthEndpoints
         group.MapGet("/", [Authorize](HttpContext httpContext) => Results.Ok("You are authenticated!"));
         group.MapGet("/admin-only", [Authorize(Roles = "Admin")](HttpContext httpContext) => Results.Ok("Hi admin!"));
         
+        group.MapPost("/refresh-tokens", async (IAuthService authService, RefreshTokenRequestDto request) =>
+        {
+            var response = await authService.RefreshTokensAsync(request);
+            return response is null ? Results.BadRequest("Invalid refresh token!") : Results.Ok(response);
+        });
         
         return group;
     }

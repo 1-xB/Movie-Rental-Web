@@ -1,4 +1,5 @@
 ﻿@page "/login"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using MovieRental.Frontend.Dtos
 @using MovieRental.Frontend.Models
 @using MovieRental.Frontend.Services
@@ -13,8 +14,8 @@
 
     <div class="mb-3">
         <label for="username" class="form-label">Username:</label>
-        <InputText class="form-control" id="username" @bind-Value="@LoginModel.UsernameOrMail" autocomplete="username" placeholder="Enter your username / email"></InputText>
-        <ValidationMessage For="@(() => LoginModel.UsernameOrMail)"/>
+        <InputText class="form-control" id="username" @bind-Value="@LoginModel.Username" autocomplete="username" placeholder="Enter your username"></InputText>
+        <ValidationMessage For="@(() => LoginModel.Username)"/>
     </div>
 
     <div class="mb-3">
@@ -42,7 +43,7 @@
     {
         var user = new LoginUserDto
         {
-            UsernameOrMail = LoginModel.UsernameOrMail,
+            UsernameOrMail = LoginModel.Username,
             Password = LoginModel.Password
         };
         ServerMessage = await UserService.LoginUserAsync(user);

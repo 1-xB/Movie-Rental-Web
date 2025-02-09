@@ -1,8 +1,7 @@
-﻿namespace Auth_course.Entity.Models
+﻿namespace MovieRental.Dtos
 {
     public class RefreshTokenRequestDto
-    {
-        public Guid UserId { get; set; }
+    { 
         public required string RefreshToken { get; set; }
     }
 }

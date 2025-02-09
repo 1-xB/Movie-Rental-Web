@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MovieRental.Frontend.Dtos;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace MovieRental.Frontend.Services;
 
-public class UserService(HttpClient http, IJSRuntime jsRuntime, NavigationManager navigationManager)
+public class UserService(HttpClient http, IJSRuntime jsRuntime, NavigationManager navigationManager, ProtectedLocalStorage protectedLocalStorage, CustomAuthenticationStateProvider provider)
 {
     public async Task<string> RegisterUserAsync(RegisterUserDto user)
     {
@@ -14,7 +15,6 @@ public class UserService(HttpClient http, IJSRuntime jsRuntime, NavigationManage
         if (response.IsSuccessStatusCode)
         {
             navigationManager.NavigateTo("/login");
-            Console.WriteLine(4);
             return "Success";
         }
         
@@ -25,18 +25,18 @@ public class UserService(HttpClient http, IJSRuntime jsRuntime, NavigationManage
     public async Task<string> LoginUserAsync(LoginUserDto user)
     {
         var response = await http.PostAsJsonAsync("api/auth/login", user);
-        Console.WriteLine(response.StatusCode);
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var tokenResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
             
             if (tokenResponse is null) return "Something went wrong with getting tokens!";
             
-            await jsRuntime.InvokeVoidAsync("localStorage.setItem", "accessToken", tokenResponse.AccessToken);
-            await jsRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", tokenResponse.RefreshToken);
-            await jsRuntime.InvokeVoidAsync("localStorage.setItem", "Id", tokenResponse.UserId);
-            navigationManager.NavigateTo("/");
-            return "Success!";
+            await protectedLocalStorage.SetAsync("accessToken", tokenResponse.AccessToken);
+            await protectedLocalStorage.SetAsync("refreshToken", tokenResponse.RefreshToken);
+            await protectedLocalStorage.SetAsync("username", user.UsernameOrMail);
+            provider.MarkUserAsAuthenticated(user.UsernameOrMail);
+            navigationManager.NavigateTo("/", true);
+            return "Success";
 
         }
 
@@ -45,4 +45,6 @@ public class UserService(HttpClient http, IJSRuntime jsRuntime, NavigationManage
             ? "Login or Password is wrong!"
             : "An error occurred: " + error;
     }
+
+    
 }
