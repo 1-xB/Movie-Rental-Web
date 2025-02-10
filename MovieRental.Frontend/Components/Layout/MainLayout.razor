@@ -1,82 +1,14 @@
-﻿@inject AuthenticationStateProvider AuthStateProvider
-@inject CustomAuthenticationStateProvider Provider
-@using Microsoft.AspNetCore.Components.Authorization
-@using MovieRental.Frontend.Services
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 <div class="main-layout">
     <header>
         <h1>Movie Rental</h1>
-        <nav>
-            <ul>
-                <li><a href="/">Homepage</a></li>
-                <li><a href="/movies">Movies</a></li>
-                <li><a href="/genres">Genres</a></li>
-                <li><a href="/about">About</a></li>
-            </ul>
-        </nav>
-        <CascadingAuthenticationState>
-            <AuthorizeView>
-                <Authorized>
-                    <p>Witaj, @username!</p>
-                    <button @onclick="Logout">Wyloguj</button>
-                </Authorized>
-                <NotAuthorized>
-                    <p>Nie jesteś zalogowany</p>
-                </NotAuthorized>
-            </AuthorizeView>
-        </CascadingAuthenticationState>
-
-        <div class="auth-buttons" style="display: @(isAuthenticated ? "none" : "block")">
-            <a href="/login">Log in</a>
-            <a href="/register">Sign up</a>
-        </div>
     </header>
 
-    <main>
-        @Body
-    </main>
+    @Body
+    
 </div>
 
 @code {
-    private string? username;
-    private bool isAuthenticated;
-    private bool isInitialized = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        Console.WriteLine($"1OnAfterRenderAsync wywołane! firstRender={firstRender}, isInitialized={isInitialized}");
-
-        if (firstRender && !isInitialized)
-        {
-            Console.WriteLine("Wywołuję Provider.InitializeAsync()...");
-            await Provider.InitializeAsync(); // Odczytaj ProtectedLocalStorage dopiero po renderowaniu!
-
-            Console.WriteLine("Pobrano stan autoryzacji...");
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
-
-            if (isAuthenticated)
-            {
-                username = authState.User.Identity?.Name;
-                Console.WriteLine($"Zalogowany użytkownik: {username}");
-            }
-            else
-            {
-                Console.WriteLine("Brak zalogowanego użytkownika.");
-            }
-
-            isInitialized = true;
-            StateHasChanged(); // Odświeżenie UI
-        }
-    }
-
-    private void Logout()
-    {
-        Console.WriteLine("Wylogowanie użytkownika...");
-        Provider.MarkUserAsLoggedOut();
-        username = null;
-        isAuthenticated = false;
-        StateHasChanged();
-    }
+    
 }

@@ -1,13 +1,12 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components.Authorization;
 using MovieRental.Frontend.Dtos;
-using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace MovieRental.Frontend.Services;
 
-public class UserService(HttpClient http, IJSRuntime jsRuntime, NavigationManager navigationManager, ProtectedLocalStorage protectedLocalStorage, CustomAuthenticationStateProvider provider)
+public class UserService(HttpClient http, NavigationManager navigationManager, ProtectedLocalStorage protectedLocalStorage, CustomAuthenticationStateProvider provider, AuthenticationStateProvider authenticationStateProvider)
 {
     public async Task<string> RegisterUserAsync(RegisterUserDto user)
     {

@@ -16,6 +16,11 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
 {
     public async Task<Users?> RegisterAsync(UserRegisterDto request)
     {
+        if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password) || string.IsNullOrWhiteSpace(request.Mail))
+        {
+            return null;
+        }
+        
         if (await context.Users.AnyAsync(u => u.Username == request.Username))
         {
             return null;
@@ -37,21 +42,29 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
 
     public async Task<TokenResponseDto?> LoginAsync(UserLoginDto request)
     {
-        var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.UsernameOrMail) ?? await context.Users.FirstOrDefaultAsync(u => u.Mail == request.UsernameOrMail);
-        if (user is null)
+        try
+        {
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.UsernameOrMail) ?? await context.Users.FirstOrDefaultAsync(u => u.Mail == request.UsernameOrMail);
+            if (user is null)
+            {
+                return null;
+            }
+
+            Console.WriteLine("znaleziono ziuta");
+            if (new PasswordHasher<Users>().VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
+            {
+                Console.WriteLine("zle haslo");
+                return null;
+            }
+
+            Console.WriteLine("dobre haslo");
+            return await CreateTokenResponse(user);
+        }
+        catch
         {
             return null;
         }
-
-        Console.WriteLine("znaleziono ziuta");
-        if (new PasswordHasher<Users>().VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
-        {
-            Console.WriteLine("zle haslo");
-            return null;
-        }
-
-        Console.WriteLine("dobre haslo");
-        return await CreateTokenResponse(user);
+        
     }
 
     public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
@@ -92,7 +105,7 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
             issuer: configuration.GetValue<string>("AppSettings:Issuer"),
             audience: configuration.GetValue<string>("AppSettings:Audience"),
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: DateTime.UtcNow.AddMinutes(30),
             signingCredentials: creds
 
         );

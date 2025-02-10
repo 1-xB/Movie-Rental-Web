@@ -1,7 +1,5 @@
 ﻿using Auth_course.Entity.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
-using MovieRental.Data;
 using MovieRental.Dtos;
 using MovieRental.Services;
 

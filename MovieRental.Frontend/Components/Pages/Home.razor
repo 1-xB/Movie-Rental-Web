@@ -1,58 +1,44 @@
 ﻿@page "/"
 @using MovieRental.Frontend.Components.Layout
-@using MovieRental.Frontend.Services
-@inject CustomAuthenticationStateProvider Provider
+
 @rendermode InteractiveServer
 @layout MainLayout
 
+<CascadingAuthenticationState>
+    <PageTitle>Home</PageTitle>
+    <nav>
+        <NavMenu></NavMenu>
+    </nav>
 
+    <main>
+    <AuthorizeView>
+        <Authorized>
+            <h1>Welcome, @context.User.Identity?.Name!</h1>
+        </Authorized>
+        <NotAuthorized>
+            <h1>Welcome!</h1>
+        </NotAuthorized>
+    </AuthorizeView>
 
-<div class="auth-buttons" style="display: @(_isAuthenticated ? "none" : "block")">
-    <a href="/login">Log in</a>
-    <a href="/register">Sign up</a>
-</div>
-
-<PageTitle>Home</PageTitle>
-<button @onclick="Logout" style="display: @(_isAuthenticated ? "block" : "none")">Wyloguj</button>
-
+    <p>
+        Movie Rental is a movie rental application. You can find the latest premieres, cinema classics and many other movies.
+    </p>
+    
+    <AuthorizeView>
+        <Authorized>
+            <p>
+                <a href="/profile">See your favorite movies</a>
+            </p>
+        </Authorized>
+        <NotAuthorized>
+            <p>
+                <a href=“/register”>register</a> or <a href=“/login”>login</a> to start using the application.
+            </p>
+        </NotAuthorized>
+    </AuthorizeView>
+   
+    </main>
+</CascadingAuthenticationState>
 @code {
-    private string? _username;
-    private bool _isAuthenticated;
-    private bool _isInitialized = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        Console.WriteLine($"OnAfterRenderAsync wywołane! firstRender={firstRender}, isInitialized={_isInitialized}");
-
-        if (firstRender && !_isInitialized)
-        {
-            Console.WriteLine("Wywołuję Provider.InitializeAsync()...");
-            await Provider.InitializeAsync();
-
-            Console.WriteLine("Pobrano stan autoryzacji...");
-            var authState = await Provider.GetAuthenticationStateAsync();
-            _isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
-
-            if (_isAuthenticated)
-            {
-                _username = authState.User.Identity?.Name;
-                Console.WriteLine($"Zalogowany użytkownik: {_username}");
-            }
-            else
-            {
-                Console.WriteLine("Brak zalogowanego użytkownika.");
-            }
-
-            _isInitialized = true;
-            StateHasChanged();
-        }
-    }
-
-    private void Logout()
-    {
-        Provider.MarkUserAsLoggedOut();
-        _username = null;
-        _isAuthenticated = false;
-        StateHasChanged();
-    }
+    
 }
