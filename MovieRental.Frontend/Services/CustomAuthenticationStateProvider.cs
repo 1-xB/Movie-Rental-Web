@@ -52,9 +52,9 @@ public class CustomAuthenticationStateProvider(
                 }
             }
         }
-        catch
+        catch (Exception e)
         {
-            // ignored
+            Console.WriteLine("Bład : " + e.Message );
         }
 
         _currentUser = new ClaimsPrincipal(identity);
@@ -65,15 +65,29 @@ public class CustomAuthenticationStateProvider(
     {
         var refreshToken = await protectedLocalStorage.GetAsync<string>("refreshToken");
         if (string.IsNullOrEmpty(refreshToken.Value)) return false;
-        var result = await http.PostAsJsonAsync("api/auth/refresh-tokens",
-            new RefreshTokenRequestDto { RefreshToken = refreshToken.Value });
-        if (result.StatusCode == HttpStatusCode.OK)
+
+        var accessToken = await protectedLocalStorage.GetAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(accessToken.Value)) return false;
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/auth/refresh-tokens")
         {
-            var tokenResponse = await result.Content.ReadFromJsonAsync<LoginResponseDto>();
+            Content = JsonContent.Create(new RefreshTokenRequestDto { RefreshToken = refreshToken.Value })
+        };
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken.Value);
+
+        var response = await http.SendAsync(request);
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var tokenResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
             if (tokenResponse is null) return false;
             await protectedLocalStorage.SetAsync("accessToken", tokenResponse.AccessToken);
             await protectedLocalStorage.SetAsync("refreshToken", tokenResponse.RefreshToken);
             return true;
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(error);
         }
 
         return false;

@@ -49,15 +49,12 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
             {
                 return null;
             }
-
-            Console.WriteLine("znaleziono ziuta");
+            
             if (new PasswordHasher<Users>().VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
             {
-                Console.WriteLine("zle haslo");
                 return null;
             }
-
-            Console.WriteLine("dobre haslo");
+            
             return await CreateTokenResponse(user);
         }
         catch
@@ -67,8 +64,13 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
         
     }
 
-    public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
+    public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request, string accessToken)
     {
+        if (!ValidateAccessToken(accessToken))
+        {
+            return null;
+        }
+        
         var user = await ValidateRefreshTokenAsync(request.RefreshToken);
         if (user == null)
         {
@@ -80,11 +82,15 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
     private async Task<Users?> ValidateRefreshTokenAsync(string refreshToken)
     {
         var user = await context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        
         if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
             return null;
         }
-
+        
+        user.RefreshToken = null;
+        user.RefreshTokenExpiryTime = null;
+        await context.SaveChangesAsync();
         return user;
     }
     
@@ -138,6 +144,35 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
             AccessToken = CreateToken(user),
             RefreshToken = await GenerateAndSaveRefreshTokenAsync(user),
         };
+    }
+    
+    private bool ValidateAccessToken(string accessToken)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!);
+        try
+        {
+            tokenHandler.ValidateToken(accessToken, new TokenValidationParameters // Zwraca wyjątek jeśli token jest niepoprawny
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = configuration.GetValue<string>("AppSettings:Issuer"),
+                ValidateAudience = true,
+                ValidAudience = configuration.GetValue<string>("AppSettings:Audience"),
+                ClockSkew = TimeSpan.Zero
+            }, out _);
+            
+            return true;
+        }
+        catch (SecurityTokenExpiredException)
+        {
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-/* Resetowanie domyślnych styli */
+
 * {
     margin: 0;
     padding: 0;
@@ -16,7 +16,6 @@ body {
     justify-content: center;
 }
 
-/* Główne layouty */
 .main-layout {
     width: 90%;
     max-width: 1400px;
@@ -25,7 +24,7 @@ body {
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
-    min-height: 90vh;
+    min-height: 95vh;
 }
 
 header {
@@ -40,7 +39,6 @@ header {
     font-weight: bold;
 }
 
-/* Nawigacja */
 .navbar {
     background: white;
     padding: 15px;
@@ -58,11 +56,10 @@ header {
 }
 
 .navbar .navbar-nav .nav-link:hover {
-    background: linear-gradient(135deg, #007bff, #6610f2);
+    background: #007bff;
     color: white;
 }
 
-/* Styl dla rozwijanej nawigacji w mobile */
 .navbar-toggler {
     border: none;
     background: linear-gradient(135deg, #007bff, #6610f2);
@@ -74,7 +71,6 @@ header {
     filter: invert(1);
 }
 
-/* Karty i przyciski */
 .card {
     background: white;
     border-radius: 15px;
@@ -105,10 +101,7 @@ main h1 {
 }
 
 /* Responsywność */
-@media (max-width: 768px) {
-    .main-layout {
-        min-height: 0;
-    }
+@media (max-width: 768px) { /* TODO : NAPRAWIC PRZYCISKI NAWIGACJI, na telefonie sie nie wyswietlają */
     .navbar-collapse {
         text-align: center;
     }
