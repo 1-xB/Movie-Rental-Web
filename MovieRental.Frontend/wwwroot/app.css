@@ -93,11 +93,12 @@ header {
 }
 
 main {
-    padding-top: 30px;
+    padding-top: 20px;
 }
 
 main h1, h3 {
     text-align: center;
+    padding-bottom: 30px;
 }
 
 p {
@@ -142,6 +143,15 @@ li {
 main p {
     text-align: center;
     margin-top: 20px;
+}
+
+.movie {
+    transition: transform 0.3s;
+}
+.movie:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    z-index: 0;
 }
 
 header:focus,

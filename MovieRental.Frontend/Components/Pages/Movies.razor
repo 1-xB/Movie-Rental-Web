@@ -1,0 +1,66 @@
+﻿@page "/movies"
+@rendermode InteractiveServer
+@inject HttpClient Http
+@using MovieRental.Frontend.Models
+@inject NavigationManager NavigationManager
+
+<PageTitle>Movies</PageTitle>
+
+<CascadingAuthenticationState>
+    <nav>
+        <NavMenu></NavMenu>
+    </nav>
+    <main class="container mt-4">
+        <h3>Movies</h3>
+
+        <div class="row">
+            @if (_movies != null && _genres != null)
+            {
+                foreach (var movie in _movies)
+                {
+                    <div class="col-md-4 mb-4 movie" @onclick="() => MovieClicked(movie.Title)">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Title: @movie.Title - @movie.ReleaseYear</h5>
+                                <p class="card-text">
+                                    Description:
+                                    @if (movie.Description.Length >= 60)
+                                    {
+                                        @movie.Description.Substring(0, 60)
+                                    }
+                                    else
+                                    {
+                                        @movie.Description
+                                    }
+                                    ...
+                                </p>
+                                <p class="card-text">Genre: @_genres.Where(g => g.Id == @movie.GenreId).Select(g => g.Name).FirstOrDefault()</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </div>
+    </main>
+</CascadingAuthenticationState>
+
+@code {
+    private List<MovieModel>? _movies;
+    private List<GenreModel>? _genres;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _movies = await Http.GetFromJsonAsync<List<MovieModel>>("api/movie");
+        _genres = await Http.GetFromJsonAsync<List<GenreModel>>("api/movie/genres");
+    }
+
+    private void MovieClicked(string title)
+    {
+        title = title.Replace(" ", "-");
+        NavigationManager.NavigateTo($"movies/{title}");
+    }
+}
