@@ -27,16 +27,25 @@ public class CustomAuthenticationStateProvider(
 
         try
         {
-            var usernameResult = await protectedLocalStorage.GetAsync<string>("username");
             var accessTokenResult = await protectedLocalStorage.GetAsync<string>("accessToken");
+            var usernameResult = await protectedLocalStorage.GetAsync<string>("username");
 
-
+            if (accessTokenResult.Value is null || usernameResult.Value is null)
+            {
+                await MarkUserAsLoggedOut();
+                return;
+            }
+            
             if (accessTokenResult.Value != null && await IsTokenValid(accessTokenResult.Value))
             {
                 if (usernameResult.Value != null)
                 {
                     identity = new ClaimsIdentity(
                         new List<Claim> { new Claim(ClaimTypes.Name, usernameResult.Value) }.AsReadOnly(), "apiauth");
+                }
+                else
+                {
+                    await MarkUserAsLoggedOut();
                 }
             }
             else
@@ -50,11 +59,15 @@ public class CustomAuthenticationStateProvider(
                             "apiauth");
                     }
                 }
+                else
+                {
+                    await MarkUserAsLoggedOut();
+                }
             }
         }
-        catch (Exception e)
+        catch
         {
-            Console.WriteLine("Bład : " + e.Message );
+            await MarkUserAsLoggedOut();
         }
 
         _currentUser = new ClaimsPrincipal(identity);
@@ -84,12 +97,6 @@ public class CustomAuthenticationStateProvider(
             await protectedLocalStorage.SetAsync("refreshToken", tokenResponse.RefreshToken);
             return true;
         }
-        else
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(error);
-        }
-
         return false;
     }
 
@@ -113,14 +120,16 @@ public class CustomAuthenticationStateProvider(
     public async Task MarkUserAsLoggedOut()
     {
         _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
-        await protectedLocalStorage.DeleteAsync("username");
-        await protectedLocalStorage.DeleteAsync("accessToken");
-        await protectedLocalStorage.DeleteAsync("refreshToken");
+        try
+        {
+            await protectedLocalStorage.DeleteAsync("username");
+            await protectedLocalStorage.DeleteAsync("accessToken");
+            await protectedLocalStorage.DeleteAsync("refreshToken");
+        }
+        catch
+        {
+            // ignored
+        }
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
-    }
-    
-    public async Task<string?> GetUsername()
-    {
-        return (await protectedLocalStorage.GetAsync<string>("username")).Value;
     }
 }
