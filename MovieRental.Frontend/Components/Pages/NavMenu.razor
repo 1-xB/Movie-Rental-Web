@@ -1,4 +1,6 @@
-﻿<nav class="navbar navbar-expand-lg">
+﻿@inject NavigationManager NavigationManager
+
+<nav class="navbar navbar-expand-lg">
     <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
@@ -41,6 +43,7 @@
     private void Logout()
     {
         Provider.MarkUserAsLoggedOut();
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
         StateHasChanged();
     }
 }

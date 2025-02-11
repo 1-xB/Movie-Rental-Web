@@ -50,10 +50,6 @@ public class CustomAuthenticationStateProvider(
                             "apiauth");
                     }
                 }
-                else
-                {
-                    navigationManager.NavigateTo("/login");
-                }
             }
         }
         catch

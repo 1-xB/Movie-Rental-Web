@@ -4,45 +4,53 @@
 @inject UserService UserService
 @rendermode InteractiveServer
 
+
 <CascadingAuthenticationState>
+    
     <PageTitle>Login</PageTitle>
-    <NavMenu></NavMenu>
-<h3>Login</h3>
+    <nav>
+        <NavMenu></NavMenu>
+    </nav>
+    
+    <main>
+        <h1>Login</h1>
+        <AuthorizeView>
+            <Authorized>
+                <p>You are already logged in. If you want to login with another account, please logout first.</p>
+            </Authorized>
+            <NotAuthorized>
+                <EditForm FormName="LoginForm" Model="@LoginModel" OnValidSubmit="HandleSubmitAsync" Context="editContext" Enhance>
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
 
-<EditForm FormName="LoginForm" Model="@LoginModel" OnValidSubmit="HandleSubmitAsync" Enhance>
-    <DataAnnotationsValidator />
-    <ValidationSummary/>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username:</label>
+                        <InputText class="form-control" id="username" @bind-Value="@LoginModel.Username" autocomplete="username" placeholder="Enter your username"></InputText>
+                        <ValidationMessage For="@(() => LoginModel.Username)"/>
+                    </div>
 
-    <div class="mb-3">
-        <label for="username" class="form-label">Username:</label>
-        <InputText class="form-control" id="username" @bind-Value="@LoginModel.Username" autocomplete="username" placeholder="Enter your username"></InputText>
-        <ValidationMessage For="@(() => LoginModel.Username)"/>
-    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password:</label>
+                        <InputText class="form-control" id="password" @bind-Value="@LoginModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
+                        <ValidationMessage For="@(() => LoginModel.Password)"/>
+                    </div>
 
-    <div class="mb-3">
-        <label for="password" class="form-label">Password:</label>
-        <InputText class="form-control" id="password" @bind-Value="@LoginModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
-        <ValidationMessage For="@(() => LoginModel.Password)"/>
-    </div>
+                    @if (ServerMessage is not null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @ServerMessage
+                        </div>
+                    }
 
-    @if (ServerMessage is not null)
-    {
-        <div class="alert alert-danger" role="alert">
-            @ServerMessage
-        </div>
-    }
+                    <button type="submit" class="btn btn-primary" aria-label="Login">Login</button>
 
-    <button type="submit" class="btn btn-primary" aria-label="Login">Login</button>
+                </EditForm>
+            </NotAuthorized>
+        </AuthorizeView>
+    </main>
+    
 
-</EditForm>
-<AuthorizeView>
-    <Authorized>
-        <button >Wyloguj</button>
-    </Authorized>
-    <NotAuthorized>
-        <p>Nie jesteś zalogowany</p>
-    </NotAuthorized>
-</AuthorizeView>
+    
 </CascadingAuthenticationState>
 @code {
     private LoginModel LoginModel { get; set; } = new();
