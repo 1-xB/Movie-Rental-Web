@@ -1,6 +1,28 @@
 ﻿@page "/about"
+@rendermode InteractiveServer
 
-<h3>About</h3>
+
+<PageTitle>About</PageTitle>
+
+<CascadingAuthenticationState>
+
+<nav>
+    <NavMenu></NavMenu>
+</nav>
+
+<main>
+    <h1>About</h1>
+    <p>
+        Movie Rental is a movie rental application that allows users to browse the latest releases, cinema classics, and many other movies.
+        With our application, you can easily find and rent your favorite movies, as well as discover new titles.
+    </p>
+    <h3>Creators</h3>
+    <p>
+        This application was created by: Piotr Zarzycki
+    </p>
+</main>
+
+</CascadingAuthenticationState>
 
 @code {
     

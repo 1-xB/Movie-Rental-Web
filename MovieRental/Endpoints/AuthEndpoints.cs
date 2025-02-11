@@ -26,10 +26,18 @@ public static class AuthEndpoints
         group.MapGet("/", [Authorize](HttpContext httpContext) => Results.Ok("You are authenticated!"));
         group.MapGet("/admin-only", [Authorize(Roles = "Admin")](HttpContext httpContext) => Results.Ok("Hi admin!"));
         
-        group.MapPost("/refresh-tokens", async (IAuthService authService, RefreshTokenRequestDto request) =>
+        group.MapPost("/refresh-tokens", async (IAuthService authService, RefreshTokenRequestDto request, HttpContext http) =>
         {
-            var response = await authService.RefreshTokensAsync(request);
-            return response is null ? Results.BadRequest("Invalid refresh token!") : Results.Ok(response);
+            var authHeader = http.Request.Headers["Authorization"].ToString();
+            Console.WriteLine(authHeader);
+            if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer "))
+            {
+                return Results.BadRequest("Invalid or missing access token!");
+            }
+            
+            var accessToken = authHeader.Split(" ")[1];
+            var response = await authService.RefreshTokensAsync(request, accessToken);
+            return response is null ? Results.BadRequest("Invalid request!") : Results.Ok(response);
         });
         
         return group;
