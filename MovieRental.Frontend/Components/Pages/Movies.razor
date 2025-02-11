@@ -4,6 +4,8 @@
 @using MovieRental.Frontend.Models
 @inject NavigationManager NavigationManager
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
 <PageTitle>Movies</PageTitle>
 
 <CascadingAuthenticationState>
@@ -12,18 +14,30 @@
     </nav>
     <main class="container mt-4">
         <h3>Movies</h3>
-
+        
+        <div class="container">
+            <div class="search-bar">
+                <div class="input-group">
+                    <input aria-describedby="search-addon" aria-label="Search" class="form-control" @oninput="OnSearchInputChanged" placeholder="Search..." type="text">
+                </div>
+            </div>
+        </div>
+        
+        <br/>
         <div class="row">
             @if (_movies != null && _genres != null)
             {
                 foreach (var movie in _movies)
                 {
+                    if (!string.IsNullOrEmpty(_searchText) && !movie.Title.ToLower().Contains(_searchText.ToLower()))
+                    {
+                        continue;
+                    }
                     <div class="col-md-4 mb-4 movie" @onclick="() => MovieClicked(movie.Title)">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Title: @movie.Title - @movie.ReleaseYear</h5>
+                                <h5 class="card-title">@movie.Title - @movie.ReleaseYear</h5>
                                 <p class="card-text">
-                                    Description:
                                     @if (movie.Description.Length >= 60)
                                     {
                                         @movie.Description.Substring(0, 60)
@@ -51,7 +65,7 @@
 @code {
     private List<MovieModel>? _movies;
     private List<GenreModel>? _genres;
-
+    private string? _searchText = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         _movies = await Http.GetFromJsonAsync<List<MovieModel>>("api/movie");
@@ -62,5 +76,10 @@
     {
         title = title.Replace(" ", "-");
         NavigationManager.NavigateTo($"movies/{title}");
+    }
+
+    private void OnSearchInputChanged(ChangeEventArgs e)
+    {
+        _searchText = e.Value?.ToString();
     }
 }

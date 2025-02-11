@@ -78,6 +78,10 @@ header {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+.card-title {
+    text-align: center;
+}
+
 .btn-primary {
     background: linear-gradient(135deg, #007bff, #6610f2);
     border: none;
