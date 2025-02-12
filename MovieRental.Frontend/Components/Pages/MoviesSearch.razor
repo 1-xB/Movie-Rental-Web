@@ -1,0 +1,63 @@
+﻿@page "/movies/{MovieName}"
+@using MovieRental.Frontend.Models
+@inject GenreService GenreService
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+
+
+
+<CascadingAuthenticationState>
+<PageTitle>
+    @if (SearchedMovieModel is null) 
+    {
+        <text>This movie is not available on our website!</text>
+    }
+    else
+    {
+        <text> @SearchedMovieModel.Title </text>
+    }
+</PageTitle>
+
+<nav>
+    <NavMenu></NavMenu>
+</nav>
+
+<main>
+    
+    <h3>MoviesSearch</h3>
+    
+    @if (SearchedMovieModel is null)
+    {
+        <p>This movie is not available on our website!</p>
+    }
+    else
+    {
+        <p>@SearchedMovieModel.Title</p>
+        <p>@SearchedMovieModel.Description</p>
+        <p>@Genres.Where(g => g.Id == @SearchedMovieModel.GenreId).Select(g => g.Name).FirstOrDefault()</p>
+    }
+</main>
+
+</CascadingAuthenticationState>
+
+
+@code {
+    [Parameter] public string? MovieName { get; set; }
+    private MovieModel? SearchedMovieModel { get; set; }
+    private List<GenreModel>? Genres { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            SearchedMovieModel = await Http.GetFromJsonAsync<MovieModel>($"api/movie/search?title={MovieName}");
+            Genres = await GenreService.GetGenresAsync(Http);
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+
+}

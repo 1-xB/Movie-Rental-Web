@@ -21,6 +21,7 @@ namespace MovieRental.Frontend
             
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+            builder.Services.AddSingleton<GenreService>();
             
             builder.Services.AddAuthorizationCore();
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

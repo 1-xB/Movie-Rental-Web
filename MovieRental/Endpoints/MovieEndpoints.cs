@@ -26,10 +26,16 @@ public static class MovieEndpoints
             return movie is null ? Results.BadRequest("Movie with this id does not exist") : Results.Ok(movie);
         });
 
-        group.MapGet("/search", async (string title, DatabaseContext context) =>
+        group.MapGet("/search", async (string? title, DatabaseContext context) =>
         {
-            var movie = await context.Movies.Where(m => m.Title.Contains(title)).ToListAsync();
-            return Results.Ok(movie);
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                return Results.BadRequest("Parameter 'title' is required.");
+            }
+            
+            var movie = await context.Movies.FirstOrDefaultAsync(m => m.Title == title.Replace("-", " "));
+            Console.WriteLine(movie);
+            return movie is null ? Results.NotFound("Movie not found ") : Results.Ok(movie);
         });
 
         group.MapPost("/", [Authorize(Roles = "Admin")] async (AddMovieDto newMovie, DatabaseContext context) =>
