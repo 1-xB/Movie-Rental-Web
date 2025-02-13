@@ -1,0 +1,100 @@
+﻿@page "/profile"
+@using System.Net
+@using MovieRental.Frontend.Models
+@inject GenreService GenreService
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>My profile</PageTitle>
+
+<CascadingAuthenticationState>
+    <nav>
+        <NavMenu></NavMenu>
+    </nav>
+    <main class="container mt-4">
+        <AuthorizeView>
+            <Authorized>
+                <h1>Welcome, @context.User.Identity?.Name!</h1>
+                @if (!_dataReceived)
+                {
+                    <h1>Loading...</h1>
+                }
+                else if (_rentedMovies is null || _rentedMovies.Count == 0)
+                {
+                    <h1>You haven't rented anything!</h1>
+                }
+                else
+                {
+                    <h4 style="text-align: center">Rented films: </h4>
+                    @foreach (var movie in _rentedMovies)
+                    {
+                        var matchedMovie = _movies?.FirstOrDefault(m => m.Id == movie.MovieId);
+                        if (matchedMovie is null)
+                        {
+                            continue;
+                        }
+
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@matchedMovie.Title</h5>
+                                <p class="card-text">@matchedMovie.Description</p>
+                                <p class="card-text"><strong>Price:</strong> @matchedMovie.Price</p>
+                            </div>
+                        </div>
+                    }
+                }
+            </Authorized>
+        <NotAuthorized>
+            <h1>To view your profile you must first log in!</h1>
+        </NotAuthorized>
+    </AuthorizeView>
+        
+    </main>
+
+</CascadingAuthenticationState>
+
+@code {
+    private List<RentalModel>? _rentedMovies;
+    private List<GenreModel>? _genres;
+    private List<MovieModel>? _movies;
+    private bool _dataReceived;
+    private bool _initialized;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _genres = await GenreService.GetGenresAsync(Http);
+        _movies = await Http.GetFromJsonAsync<List<MovieModel>>("api/movie");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_initialized)
+        {
+            var accessToken = await LocalStorage.GetAsync<string>("accessToken");
+            if (!string.IsNullOrEmpty(accessToken.Value))
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "api/rental/rent-movie");
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken.Value);
+
+                var response = await Http.SendAsync(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    _rentedMovies = await response.Content.ReadFromJsonAsync<List<RentalModel>?>() ?? new List<RentalModel>();
+                }
+                else if (response.StatusCode == HttpStatusCode.NoContent)
+                {
+                    _rentedMovies = new List<RentalModel>();
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await Provider.MarkUserAsLoggedOut();
+                    NavigationManager.NavigateTo("/login");
+                }
+                _dataReceived = true;
+                _initialized = true;
+                StateHasChanged();
+            }
+        }
+    }
+}

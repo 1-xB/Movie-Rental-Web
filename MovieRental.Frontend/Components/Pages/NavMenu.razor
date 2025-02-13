@@ -40,9 +40,9 @@
 </nav>
 @code {
 
-    private void Logout()
+    private async Task Logout()
     {
-        Provider.MarkUserAsLoggedOut();
+        await Provider.MarkUserAsLoggedOut();
         NavigationManager.NavigateTo(NavigationManager.Uri, true);
         StateHasChanged();
     }

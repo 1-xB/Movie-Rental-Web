@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using MovieRental.Dtos;
+using MovieRental.Entity;
 using MovieRental.Services;
 
 namespace MovieRental.Endpoints;
@@ -36,7 +37,14 @@ public static class RentalEndpoints
                 return Results.Unauthorized();
             }
             var username =  httpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-            return string.IsNullOrWhiteSpace(username) ? Results.Unauthorized() : Results.Ok(await rentalService.GetRentalsByUsername(username));
+            if (username == null) return Results.Unauthorized();
+            
+            List<Rentals>? rentals = await rentalService.GetRentalsByUsername(username);
+            if (rentals != null && rentals.Count <= 0)
+            {
+                return Results.NoContent();
+            }
+            return Results.Ok(rentals);
         });
         
         return group;

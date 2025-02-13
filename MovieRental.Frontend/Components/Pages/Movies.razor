@@ -30,7 +30,7 @@
             {
                 foreach (var movie in _movies)
                 {
-                    if (!string.IsNullOrEmpty(_searchText) && !movie.Title.ToLower().Contains(_searchText.ToLower()))
+                    if ((!string.IsNullOrEmpty(_searchText) && !movie.Title.ToLower().Contains(_searchText.ToLower())) || movie.AvailableCopies <= 0)
                     {
                         continue;
                     }
