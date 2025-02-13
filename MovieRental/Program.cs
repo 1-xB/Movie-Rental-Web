@@ -43,11 +43,13 @@ namespace MovieRental
 
             builder.Services.AddAuthorization();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IRentalService, RentalService>();
             
             var app = builder.Build();
 
             app.MapAuthRoutes();
             app.MapMovieRoutes();
+            app.MapRentalRoutes();
             
             // Użyj OpenAPI
             if (app.Environment.IsDevelopment())

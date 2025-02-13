@@ -5,6 +5,7 @@ public class MovieModel
     public int Id { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
+    public double Price { get; set; }
     public int GenreId { get; set; }
     public DateOnly ReleaseYear { get; set; }
 
