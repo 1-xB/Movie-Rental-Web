@@ -66,7 +66,7 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
 
     public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request, string accessToken)
     {
-        if (!ValidateAccessToken(accessToken))
+        if (!IsAccessTokenExpired(accessToken))
         {
             return null;
         }
@@ -146,7 +146,7 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
         };
     }
     
-    private bool ValidateAccessToken(string accessToken)
+    private bool IsAccessTokenExpired(string accessToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!);
@@ -167,6 +167,31 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
         }
         catch (SecurityTokenExpiredException)
         {
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool IsAccessTokenValid(string accessToken)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!);
+        try
+        {
+            tokenHandler.ValidateToken(accessToken, new TokenValidationParameters // Zwraca wyjątek jeśli token jest niepoprawny
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = configuration.GetValue<string>("AppSettings:Issuer"),
+                ValidateAudience = true,
+                ValidAudience = configuration.GetValue<string>("AppSettings:Audience"),
+                ClockSkew = TimeSpan.Zero
+            }, out _);
+            
             return true;
         }
         catch

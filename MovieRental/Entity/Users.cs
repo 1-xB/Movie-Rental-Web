@@ -1,4 +1,6 @@
-﻿namespace MovieRental.Entity;
+﻿using System.Text.Json.Serialization;
+
+namespace MovieRental.Entity;
 
 public class Users
 {
@@ -9,6 +11,6 @@ public class Users
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiryTime { get; set; }
     public string Role { get; set; }
-    public ICollection<Rentals> Rentals { get; set; } = new List<Rentals>();
+    [JsonIgnore] public ICollection<Rentals> Rentals { get; set; } = new List<Rentals>();
 
 }

@@ -11,16 +11,32 @@ public static class RentalEndpoints
     {
         var group = app.MapGroup("api/rental");
 
-        group.MapPost("/rent-movie", [Authorize] async (HttpContext httpContext, IRentalService rentalService, RentMovieDto request) =>
+        group.MapPost("/rent-movie", [Authorize] async (HttpContext httpContext, IRentalService rentalService, RentMovieDto request, IAuthService authService) =>
         {
-            var username = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrWhiteSpace(username))
+            var accessToken = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+            if (!authService.IsAccessTokenValid(accessToken))
+            {
+                return Results.Unauthorized();
+            }
+            var id = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return Results.Unauthorized();
             }
             
-            var rental = await rentalService.RentMovie(request, username);
+            var rental = await rentalService.RentMovie(request, id);
             return rental is null ? Results.BadRequest("Invalid request!") : Results.Ok(rental);
+        });
+
+        group.MapGet("rent-movie", [Authorize] async (HttpContext httpContext, IRentalService rentalService, IAuthService authService) =>
+        {
+            var accessToken = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+            if (!authService.IsAccessTokenValid(accessToken))
+            {
+                return Results.Unauthorized();
+            }
+            var username =  httpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            return string.IsNullOrWhiteSpace(username) ? Results.Unauthorized() : Results.Ok(await rentalService.GetRentalsByUsername(username));
         });
         
         return group;

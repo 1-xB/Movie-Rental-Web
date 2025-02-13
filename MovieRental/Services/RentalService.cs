@@ -7,9 +7,10 @@ namespace MovieRental.Services;
 
 public class RentalService(DatabaseContext context) : IRentalService
 {
-    public async Task<Rentals?> RentMovie(RentMovieDto request, string username)
+    public async Task<Rentals?> RentMovie(RentMovieDto request, string id)
     {
-        var user = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        var guidId = Guid.Parse(id);
+        var user = await context.Users.FindAsync(guidId);
         if (user is null)
         {
             return null;
@@ -24,8 +25,7 @@ public class RentalService(DatabaseContext context) : IRentalService
 
         movie.AvailableCopies--;
 
-        
-        return new Rentals()
+        var rental = new Rentals()
         {
             UserId = user.Id,
             MovieId = request.MovieId,
@@ -33,6 +33,23 @@ public class RentalService(DatabaseContext context) : IRentalService
             ReturnDate = request.ReturnDate,
             Returned = false
         };
+        
+        await context.Rentals.AddAsync(rental);
+        await context.SaveChangesAsync();
+
+        return rental;
     }
+
+    public async Task<List<Rentals>?> GetRentalsByUsername(string username)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        if (user is null)
+        {
+            return null;
+        }
+        return await context.Rentals.Where(r => r.UserId == user.Id).ToListAsync();
+    }
+    
+    
     
 }
