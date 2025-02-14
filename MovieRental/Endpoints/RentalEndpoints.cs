@@ -29,7 +29,7 @@ public static class RentalEndpoints
             return rental is null ? Results.BadRequest("Invalid request!") : Results.Ok(rental);
         });
 
-        group.MapGet("rent-movie", [Authorize] async (HttpContext httpContext, IRentalService rentalService, IAuthService authService) =>
+        group.MapGet("/rent-movie", [Authorize] async (HttpContext httpContext, IRentalService rentalService, IAuthService authService) =>
         {
             var accessToken = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
             if (!authService.IsAccessTokenValid(accessToken))
@@ -45,6 +45,23 @@ public static class RentalEndpoints
                 return Results.NoContent();
             }
             return Results.Ok(rentals);
+        });
+
+        group.MapPost("/rent-movie/return", [Authorize] async (HttpContext httpContext, IRentalService rentalService, IAuthService authService, int id) =>
+        {
+            var accessToken = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+            if (!authService.IsAccessTokenValid(accessToken))
+            {
+                return Results.Unauthorized();
+            }
+
+            var rental = await rentalService.ReturnMovie(id);
+            if (rental is null)
+            {
+                Results.BadRequest();
+            }
+
+            return Results.Ok(rental);
         });
         
         return group;

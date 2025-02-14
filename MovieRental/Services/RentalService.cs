@@ -50,6 +50,26 @@ public class RentalService(DatabaseContext context) : IRentalService
         return await context.Rentals.Where(r => r.UserId == user.Id).ToListAsync();
     }
     
+    public async Task<Rentals?> ReturnMovie(int id)
+    {
+        var rental = await context.Rentals.FindAsync(id);
+        if (rental is null || rental.Returned)
+        {
+            return null;
+        }
+        
+        rental.Returned = true;
+        var movie = await context.Movies.FindAsync(rental.MovieId);
+        if (movie is null)
+        {
+            return null;
+        }
+
+        movie.AvailableCopies++;
+        await context.SaveChangesAsync();
+        return rental;
+    }
+    
     
     
 }
