@@ -55,13 +55,14 @@ public static class RentalEndpoints
                 return Results.Unauthorized();
             }
 
-            var rental = await rentalService.ReturnMovie(id);
-            if (rental is null)
+            var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                Results.BadRequest();
+                return Results.Unauthorized();
             }
 
-            return Results.Ok(rental);
+            var rental = await rentalService.ReturnMovie(id, userId);
+            return rental is null ? Results.BadRequest() : Results.Ok(rental);
         });
         
         return group;
