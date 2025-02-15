@@ -30,14 +30,21 @@
         }
         else
         {
-            <div class="card">
-                <div class="card-body">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white text-black">
                     <h1 class="card-title">@SearchedMovieModel.Title</h1>
+                    <p class="card-text"><strong>Genre :</strong> @Genres.Where(g => g.Id == @SearchedMovieModel.GenreId).Select(g => g.Name).FirstOrDefault()</p>
+                    <p class="card-text"><strong>Release year:</strong> @SearchedMovieModel.ReleaseYear</p>
+                </div>
+                <div class="card-body">
+                    
+                    <h4 class="card-title">Description</h4>
                     <p class="card-text">@SearchedMovieModel.Description</p>
-                    <p class="card-text">Genre: @Genres.Where(g => g.Id == @SearchedMovieModel.GenreId).Select(g => g.Name).FirstOrDefault()</p>
-                    <p class="card-text">Available Copies: @SearchedMovieModel.AvailableCopies</p>
+                    
+                    <p class="card-text"><strong>Available copies:</strong> @SearchedMovieModel.AvailableCopies</p>
+                    <p class="card-text"><strong>Price per day:</strong> @SearchedMovieModel.Price $</p>
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary">Rent</button>
+                        <button class="btn btn-primary btn-lg">Rent</button>
                     </div>
                 </div>
             </div>
