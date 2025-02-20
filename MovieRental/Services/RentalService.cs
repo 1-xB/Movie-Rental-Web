@@ -31,7 +31,8 @@ public class RentalService(DatabaseContext context) : IRentalService
             MovieId = request.MovieId,
             RentalDate = DateOnly.FromDateTime(DateTime.UtcNow),
             ReturnDate = request.ReturnDate,
-            Returned = false
+            Returned = false,
+            TotalPrice = request.TotalPrice
         };
         
         await context.Rentals.AddAsync(rental);

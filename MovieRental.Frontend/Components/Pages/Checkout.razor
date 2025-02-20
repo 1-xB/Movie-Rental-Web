@@ -123,10 +123,11 @@
 
         ErrorMessage = string.Empty;
         
-        // IF
+        // INFO
         // There should be payment logic here, but it's not a real store. 
         // So we just confirm the rental.
         Rent.MovieId = Id;
+        Rent.TotalPrice = Price;
         var accessToken = await LocalStorage.GetAsync<string>("accessToken");
         if (string.IsNullOrEmpty(accessToken.Value))
         {

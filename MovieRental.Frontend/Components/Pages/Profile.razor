@@ -43,7 +43,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">@matchedMovie.Title</h5>
                                     <p class="card-text">@matchedMovie.Description</p>
-                                    <p class="card-text"><strong>Price:</strong> @matchedMovie.Price $</p>
+                                    <p class="card-text"><strong>Price:</strong> @movie.TotalPrice $</p>
                                     <p class="card-text"><strong>Genre:</strong> @_genres?.FirstOrDefault(g => g.Id == matchedMovie.GenreId)?.Name</p>
                                     <p class="card-text">Rental date :  @movie.RentalDate</p>
                                     <p class="card-text">Movie has to be returned on : @movie.ReturnDate</p>
@@ -69,7 +69,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">@matchedMovie.Title</h5>
                                     <p class="card-text">@matchedMovie.Description</p>
-                                    <p class="card-text"><strong>Price:</strong> @matchedMovie.Price $</p>
+                                    <p class="card-text"><strong>Price:</strong> @movie.TotalPrice $</p>
                                     <p class="card-text"><strong>Genre:</strong> @_genres?.FirstOrDefault(g => g.Id == matchedMovie.GenreId)?.Name</p>
                                     <p class="card-text">Rental date :  @movie.RentalDate</p>
                                     <p class="card-text">Movie has to be returned on : @movie.ReturnDate</p>

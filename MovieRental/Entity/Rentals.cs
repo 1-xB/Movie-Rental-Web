@@ -8,6 +8,7 @@ public class Rentals
     public Guid UserId { get; set; }
     
     [JsonIgnore] public Users? User { get; set; }
+    public decimal TotalPrice { get; set; }
     public int MovieId { get; set; }
     [JsonIgnore] public Movie? Movie { get; set; }
     public DateOnly RentalDate { get; set; }
