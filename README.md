@@ -56,8 +56,8 @@ Movie-Rental-Web is a web application by which users can view, rent, and manage 
 4. Navigate to the frontend project directory and restore dependencies:
 
    ```sh
-cd./MovieRental.Frontend
-npm install  
+    cd./MovieRental.Frontend
+    npm install  
     ```
 5. Execute the backend and frontend projects:
 
