@@ -44,7 +44,7 @@
                     <p class="card-text"><strong>Available copies:</strong> @SearchedMovieModel.AvailableCopies</p>
                     <p class="card-text"><strong>Price per day:</strong> @SearchedMovieModel.Price $</p>
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary btn-lg">Rent</button>
+                        <button class="btn btn-primary btn-lg" @onclick="RentMovie">Rent</button>
                     </div>
                 </div>
             </div>
@@ -74,6 +74,11 @@
     private void GoBack()
     {
         NavigationManager.NavigateTo("/movies");   
+    }
+
+    private void RentMovie()
+    {
+        NavigationManager.NavigateTo("/checkout/" + SearchedMovieModel.Id);
     }
 
 }
