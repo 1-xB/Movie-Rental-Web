@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieRental.Data;
 
@@ -10,9 +11,11 @@ using MovieRental.Data;
 namespace MovieRental.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250205211858_InitialMigration2")]
+    partial class InitialMigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
@@ -38,18 +41,12 @@ namespace MovieRental.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AvailableCopies")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("GenreId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("REAL");
 
                     b.Property<DateOnly>("ReleaseYear")
                         .HasColumnType("TEXT");
@@ -58,9 +55,6 @@ namespace MovieRental.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("TotalCopies")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -82,12 +76,6 @@ namespace MovieRental.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("ReturnDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("Returned")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("TotalPrice")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("UserId")
@@ -122,10 +110,6 @@ namespace MovieRental.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Username")
