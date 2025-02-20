@@ -47,18 +47,18 @@ Movie-Rental-Web is a web application by which users can view, rent, and manage 
    ```sh
    cd MovieRental
    dotnet restore
-```
+    ```
 3. Run database migrations:
 
    ```sh
    dotnet ef database update
-```
+    ```
 4. Navigate to the frontend project directory and restore dependencies:
 
    ```sh
 cd./MovieRental.Frontend
-npm install
-   ```
+npm install  
+    ```
 5. Execute the backend and frontend projects:
 
    ```sh
