@@ -1,110 +1,110 @@
-
 # Movie-Rental-Web
+## Description
 
-## Overview
+Movie-Rental-Web is a web application where users can browse, rent, and administer movies. The application includes a backend API as well as a frontend user interface.
 
-Movie-Rental-Web is a web application that allows users to browse, rent, and manage movies. The application includes both a backend API and a frontend user interface.
+## Functions
 
-## Features
+- Registration and login of the user
 
-- User registration and authentication
-- Browse available movies
-- Search for movies by title
-- Rent movies and manage rentals
-- Admin functionalities to add, update, and delete movies and genres
-- JWT-based authentication and authorization with refresh token and access token
-- Responsive design for mobile and desktop
-
+- View available movies
+- Find movies by title
+- Rent movies and manage the rental
+- Admin functions to add, edit, and delete movies and genres
+- JWT authentication and authorization using refresh token and access token
+- Responsive design for both mobile and desktop
 ## Technologies Used
 
 - **Backend:**
+
   - ASP.NET Core 9.0
   - Entity Framework Core 9.0
   - SQLite
-  - JWT Authentication with refresh token and access token
-  - Swagger for API documentation
-
+  - JWT Authentication using refresh token and access token
+  - Swagger for API
 - **Frontend:**
+
   - Blazor
   - Bootstrap 5.3
   - Protected Browser Storage for authentication state
-
 ## Getting Started
 
 ### Prerequisites
 
-- .NET 9.0 SDK
-- Node.js (for frontend dependencies)
+-.NET 9.0 SDK
 
+- Node.js (for frontend dependencies)
 ### Setup
 
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/1-xB/Movie-Rental-Web.git
    cd Movie-Rental-Web
    ```
-
 2. Navigate to the backend project directory and restore dependencies:
+
    ```sh
    cd MovieRental
    dotnet restore
    ```
+3. Run database migrations:
 
-3. Apply database migrations:
    ```sh
    dotnet ef database update
    ```
-
 4. Navigate to the frontend project directory and restore dependencies:
+
    ```sh
-   cd ../MovieRental.Frontend
+cd./MovieRental.Frontend
    npm install
    ```
+5. Execute the backend and frontend projects:
 
-5. Build and run the backend and frontend projects:
    ```sh
-   dotnet run --project ../MovieRental
+   dotnet run --project./MovieRental
    dotnet run --project MovieRental.Frontend
    ```
-
 6. Open your browser and navigate to:
+
    - Backend API: [https://localhost:7242](https://localhost:7242)
    - Frontend: [https://localhost:5001](https://localhost:7086)
-
 ---
 
 ## Usage
 
 - **Users:**
-  - Register a new account or log in to an existing one.
+
+- Sign up for a new account or log in to an existing one.
   - Browse and search for movies by title.
-  - Rent available movies and manage your rentals.
-
+  - Rent available movies and monitor your rentals.
 - **Admin:**
-  - Log in with an admin account.
-  - Add, update, or delete movies and genres via the admin dashboard.
 
+  - Log in with an admin account.
+  - Add, update or delete videos and genres via swagger.
 ---
+
 
 ## API Documentation
 
-The backend API is documented with Swagger.  
-Once the application is running, navigate to [https://localhost:7242/swagger](https://localhost:7242/swagger) to explore the API endpoints.
+The backend API is Swagger-documented.
 
+Once the application is run, navigate to [https://localhost:7242/swagger](https://localhost:7242/swagger) in order to explore the API endpoints.
 ---
 
 ## Screenshots
 
-Below are some screenshots from the application:
+Below are some screenshots of the application:
 
 1. **Homepage:**
-   ![Homepage](img/Image1.png)
 
+  ![Homepage](img/Image1.png)
 2. **Movie List:**
-   ![Movie List](img/Image2.png)
 
+  ![Movie List](img/Image2.png)
 3. **Movie Rental:**
-   ![Movie Rental](img/Image3.png)
 
+  ![Movie Rental](img/Image3.png)
 4. **User Profile:**
-   ![User Profile](img/Image4.png)
+
+  ![User Profile](img/Image4.png)
