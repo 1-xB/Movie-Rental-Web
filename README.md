@@ -1,110 +1,125 @@
 # Movie-Rental-Web
+
 ## Description
 
-Movie-Rental-Web is a web application where users can browse, rent, and administer movies. The application includes a backend API as well as a frontend user interface.
+**Movie-Rental-Web** is a comprehensive web application that enables users to browse, rent, and manage movies. It features a robust backend API and an intuitive frontend user interface, designed to provide a seamless movie rental experience.
 
-## Functions
+---
 
-- Registration and login of the user
+## Features
 
-- View available movies
-- Find movies by title
-- Rent movies and manage the rental
-- Admin functions to add, edit, and delete movies and genres
-- JWT authentication and authorization using refresh token and access token
-- Responsive design for both mobile and desktop
+- **User Authentication:** Registration and login functionality.
+- **Movie Management:**
+  - View a list of available movies.
+  - Search for movies by title.
+  - Rent and manage movie rentals.
+- **Admin Panel:**
+  - Add, edit, and delete movies and genres.
+- **Authentication & Authorization:**
+  - JWT-based authentication with refresh and access tokens.
+- **Responsive Design:** Optimized for both mobile and desktop devices.
+
+---
+
 ## Technologies Used
 
-- **Backend:**
+### Backend:
+- **ASP.NET Core 9.0**: For building the API.
+- **Entity Framework Core 9.0**: For database operations.
+- **SQLite**: Lightweight database.
+- **JWT Authentication**: Secure authentication using refresh and access tokens.
+- **Swagger**: API documentation and testing.
 
-  - ASP.NET Core 9.0
-  - Entity Framework Core 9.0
-  - SQLite
-  - JWT Authentication using refresh token and access token
-  - Swagger for API
-- **Frontend:**
+### Frontend:
+- **Blazor**: For building the user interface.
+- **Bootstrap 5.3**: Responsive design.
+- **Protected Browser Storage**: Maintaining authentication state.
 
-  - Blazor
-  - Bootstrap 5.3
-  - Protected Browser Storage for authentication state
+---
+
 ## Getting Started
 
 ### Prerequisites
 
--.NET 9.0 SDK
+Ensure the following tools are installed:
+- .NET 9.0 SDK
+- Node.js (for managing frontend dependencies)
 
-- Node.js (for frontend dependencies)
 ### Setup
 
-1. Clone the repository:
-
+1. **Clone the Repository:**
    ```sh
    git clone https://github.com/1-xB/Movie-Rental-Web.git
    cd Movie-Rental-Web
    ```
-2. Navigate to the backend project directory and restore dependencies:
 
-   ```sh
-   cd MovieRental
-   dotnet restore
-   ```
-3. Run database migrations:
+2. **Setup Backend:**
+   - Navigate to the backend project directory:
+     ```sh
+     cd MovieRental
+     ```
+   - Restore dependencies:
+     ```sh
+     dotnet restore
+     ```
+   - Apply database migrations:
+     ```sh
+     dotnet ef database update
+     ```
 
-   ```sh
-   dotnet ef database update
-   ```
-4. Navigate to the frontend project directory and restore dependencies:
+3. **Setup Frontend:**
+   - Navigate to the frontend project directory:
+     ```sh
+     cd ./MovieRental.Frontend
+     ```
+   - Install dependencies:
+     ```sh
+     npm install
+     ```
 
-   ```sh
-cd./MovieRental.Frontend
-   npm install
-   ```
-5. Execute the backend and frontend projects:
+4. **Run the Application:**
+   - Start the backend and frontend:
+     ```sh
+     dotnet run --project ./MovieRental
+     dotnet run --project MovieRental.Frontend
+     ```
+   - Open your browser and access the application:
+     - Backend API: [https://localhost:7242](https://localhost:7242)
+     - Frontend: [https://localhost:7086](https://localhost:7086)
 
-   ```sh
-   dotnet run --project./MovieRental
-   dotnet run --project MovieRental.Frontend
-   ```
-6. Open your browser and navigate to:
-
-   - Backend API: [https://localhost:7242](https://localhost:7242)
-   - Frontend: [https://localhost:5001](https://localhost:7086)
 ---
 
 ## Usage
 
-- **Users:**
+### For Users:
+- **Sign Up / Log In:** Create an account or log in.
+- **Browse Movies:** Explore available movies and search by title.
+- **Rent Movies:** Rent and monitor your current rentals.
 
-- Sign up for a new account or log in to an existing one.
-  - Browse and search for movies by title.
-  - Rent available movies and monitor your rentals.
-- **Admin:**
+### For Admins:
+  - Manage movies and genres (add, update, delete) via Swagger or other tools.
 
-  - Log in with an admin account.
-  - Add, update or delete videos and genres via swagger.
 ---
-
 
 ## API Documentation
 
-The backend API is Swagger-documented.
+The backend API includes comprehensive Swagger documentation. After starting the application, visit:
+[https://localhost:7242/swagger](https://localhost:7242/swagger) to explore available endpoints.
 
-Once the application is run, navigate to [https://localhost:7242/swagger](https://localhost:7242/swagger) in order to explore the API endpoints.
 ---
 
 ## Screenshots
 
-Below are some screenshots of the application:
+Here are some visuals of the application:
 
 1. **Homepage:**
+   ![Homepage](img/Image1.png)
 
-  ![Homepage](img/Image1.png)
 2. **Movie List:**
+   ![Movie List](img/Image2.png)
 
-  ![Movie List](img/Image2.png)
 3. **Movie Rental:**
+   ![Movie Rental](img/Image3.png)
 
-  ![Movie Rental](img/Image3.png)
 4. **User Profile:**
-
-  ![User Profile](img/Image4.png)
+   ![User Profile](img/Image4.png)
