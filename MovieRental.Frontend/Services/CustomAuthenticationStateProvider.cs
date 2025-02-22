@@ -22,57 +22,81 @@ public class CustomAuthenticationStateProvider(
     }
 
     private async Task InitializeAsync()
+{
+    var identity = new ClaimsIdentity();
+
+    try
     {
-        var identity = new ClaimsIdentity();
+        var accessTokenResult = await protectedLocalStorage.GetAsync<string>("accessToken");
+        var usernameResult = await protectedLocalStorage.GetAsync<string>("username");
 
-        try
+        if (accessTokenResult.Value is null || usernameResult.Value is null)
         {
-            var accessTokenResult = await protectedLocalStorage.GetAsync<string>("accessToken");
-            var usernameResult = await protectedLocalStorage.GetAsync<string>("username");
+            await MarkUserAsLoggedOut();
+            return;
+        }
 
-            if (accessTokenResult.Value is null || usernameResult.Value is null)
+        if (accessTokenResult.Value != null && await IsTokenValid(accessTokenResult.Value))
+        {
+            var jwtToken = new JwtSecurityTokenHandler().ReadToken(accessTokenResult.Value) as JwtSecurityToken;
+            var roleClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            if (usernameResult.Value != null)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, usernameResult.Value)
+                };
+
+                if (roleClaim != null)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, roleClaim));
+                }
+
+                identity = new ClaimsIdentity(claims, "apiauth");
+            }
+            else
             {
                 await MarkUserAsLoggedOut();
-                return;
             }
-            
-            if (accessTokenResult.Value != null && await IsTokenValid(accessTokenResult.Value))
+        }
+        else
+        {
+            if (await RefreshTokens())
             {
+                var jwtToken = new JwtSecurityTokenHandler().ReadToken(accessTokenResult.Value) as JwtSecurityToken;
+                var roleClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
                 if (usernameResult.Value != null)
                 {
-                    identity = new ClaimsIdentity(
-                        new List<Claim> { new Claim(ClaimTypes.Name, usernameResult.Value) }.AsReadOnly(), "apiauth");
-                }
-                else
-                {
-                    await MarkUserAsLoggedOut();
+                    var claims = new List<Claim>
+                    {
+                        new(ClaimTypes.Name, usernameResult.Value)
+                    };
+
+                    if (roleClaim != null)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, roleClaim));
+                    }
+
+                    identity = new ClaimsIdentity(claims, "apiauth");
                 }
             }
             else
             {
-                if (await RefreshTokens())
-                {
-                    if (usernameResult.Value != null)
-                    {
-                        identity = new ClaimsIdentity(
-                            new List<Claim> { new Claim(ClaimTypes.Name, usernameResult.Value) }.AsReadOnly(),
-                            "apiauth");
-                    }
-                }
-                else
-                {
-                    await MarkUserAsLoggedOut();
-                }
+                await MarkUserAsLoggedOut();
             }
         }
-        catch
-        {
-            await MarkUserAsLoggedOut();
-        }
-
-        _currentUser = new ClaimsPrincipal(identity);
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
     }
+    catch
+    {
+        await MarkUserAsLoggedOut();
+    }
+
+    _currentUser = new ClaimsPrincipal(identity);
+    Console.WriteLine("User authenticated: " + GetUserRole() + _currentUser.IsInRole("Admin") + _currentUser.IsInRole("Client"));
+    NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
+}
 
     public async Task<bool> RefreshTokens()
     {
@@ -132,4 +156,6 @@ public class CustomAuthenticationStateProvider(
         }
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
     }
+    
+    public string? GetUserRole() => _currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 }

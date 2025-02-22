@@ -199,5 +199,32 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
             return false;
         }
     }
+    
+    public async Task<Users?> RegisterAdminAsync(UserRegisterDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password) || string.IsNullOrWhiteSpace(request.Mail))
+        {
+            return null;
+        }
+        
+        if (await context.Users.AnyAsync(u => u.Username == request.Username))
+        {
+            return null;
+        }
+        var user = new Users();
+
+        var hashedPassword = new PasswordHasher<Users>().HashPassword(user, request.Password);
+        
+        user.Username = request.Username;
+        user.Mail = request.Mail;
+        user.PasswordHash = hashedPassword;
+        user.Role = "Admin";
+        
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+
+        return user;
+    }
+    
 
 }

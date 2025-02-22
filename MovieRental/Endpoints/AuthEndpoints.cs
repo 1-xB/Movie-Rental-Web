@@ -40,6 +40,12 @@ public static class AuthEndpoints
             return response is null ? Results.BadRequest("Invalid request!") : Results.Ok(response);
         });
         
+        group.MapPost("/register-admin", [Authorize(Roles = "Admin")] async (IAuthService authService, UserRegisterDto request) =>
+        {
+            var user = await authService.RegisterAdminAsync(request);
+            return user is null ? Results.BadRequest("Username already exists or invalid data!") : Results.Ok(user);
+        });
+        
         return group;
     }
 }
