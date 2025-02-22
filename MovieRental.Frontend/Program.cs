@@ -23,7 +23,11 @@ namespace MovieRental.Frontend
             builder.Services.AddScoped<CustomAuthenticationStateProvider>();
             builder.Services.AddSingleton<GenreService>();
             
-            builder.Services.AddAuthorizationCore();
+            builder.Services.AddAuthorizationCore(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            });
+            
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie();
 

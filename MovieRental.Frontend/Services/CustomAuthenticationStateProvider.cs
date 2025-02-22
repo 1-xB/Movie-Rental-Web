@@ -94,7 +94,6 @@ public class CustomAuthenticationStateProvider(
     }
 
     _currentUser = new ClaimsPrincipal(identity);
-    Console.WriteLine("User authenticated: " + GetUserRole() + _currentUser.IsInRole("Admin") + _currentUser.IsInRole("Client"));
     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
 }
 

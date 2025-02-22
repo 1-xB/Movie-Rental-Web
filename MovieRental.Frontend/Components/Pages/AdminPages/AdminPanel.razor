@@ -1,0 +1,85 @@
+﻿@page "/admin-panel"
+@using MovieRental.Frontend.Components.Pages.LayoutsPages
+@rendermode InteractiveServer
+@inject NavigationManager navigationManager
+
+<CascadingAuthenticationState>
+    <nav>
+        <NavMenu></NavMenu>
+    </nav>
+    <main class="container mt-4">
+        <AuthorizeView Policy="AdminOnly">
+            <Authorized>
+                <h1>Admin panel</h1>
+                <p>Welcome, @context.User.Identity?.Name!</p>
+                <p>Here you can manage the movies in the database.</p>
+                
+                <div class="btn-group d-flex flex-column" role="group" aria-label="User actions">
+                    <h5>User Actions</h5>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToAddUser">Add User</button>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToAddAdministrator">Add Administrator</button>
+                </div>
+                <div class="btn-group d-flex flex-column" role="group" aria-label="Movie actions">
+                    <h5>Movie Actions</h5>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToAddMovie">Add Movie</button>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToEditMovie">Edit Movie</button>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToDeleteMovie">Delete Movie</button>
+                </div>
+                <div class="btn-group d-flex flex-column" role="group" aria-label="Genre actions">
+                    <h5>Genre Actions</h5>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToAddGenre">Add Genre</button>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToEditGenre">Edit Genre</button>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToDeleteGenre">Delete Genre</button>
+                </div>
+                
+            </Authorized>
+            <NotAuthorized>
+                <h1>Access denied!</h1>
+                <p>You don't have the necessary permissions to access this page.</p>
+                    
+            </NotAuthorized>
+        </AuthorizeView>
+    </main>
+</CascadingAuthenticationState>
+
+@code {
+    private void NavigateToAddUser()
+    {
+        navigationManager.NavigateTo("admin-panel/add-user");
+    }
+    
+    private void NavigateToAddAdministrator()
+    {
+        navigationManager.NavigateTo("admin-panel/add-administrator");
+    }
+
+    private void NavigateToAddMovie()
+    {
+        navigationManager.NavigateTo("admin-panel/add-movie");
+    }
+
+    private void NavigateToEditMovie()
+    {
+        navigationManager.NavigateTo("admin-panel/edit-movie");
+    }
+
+    private void NavigateToDeleteMovie()
+    {
+        navigationManager.NavigateTo("admin-panel/delete-movie");
+    }
+
+    private void NavigateToAddGenre()
+    {
+        navigationManager.NavigateTo("admin-panel/add-genre");
+    }
+
+    private void NavigateToEditGenre()
+    {
+        navigationManager.NavigateTo("admin-panel/edit-genre");
+    }
+
+    private void NavigateToDeleteGenre()
+    {
+        navigationManager.NavigateTo("admin-panel/delete-genre");
+    }
+}
