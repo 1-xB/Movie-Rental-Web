@@ -1,7 +1,9 @@
-﻿namespace MovieRental.Frontend.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MovieRental.Frontend.Dtos;
 
 public class LoginUserDto
 {
-    public required string UsernameOrMail { get; set; }
-    public required string Password { get; set; }
+    [Required] public required string UsernameOrMail { get; set; }
+    [Required] public required string Password { get; set; }
 }

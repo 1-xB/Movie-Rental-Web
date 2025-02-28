@@ -20,6 +20,32 @@ public class UserService(HttpClient http, NavigationManager navigationManager, P
         var error = await response.Content.ReadAsStringAsync();
         return error.Contains("Username already exists") ? "Username already exists!" : "An error occurred: " + error;
     }
+    
+    public async Task<string?> RegisterAdministratorAsync(RegisterUserDto user)
+    {
+        var accessToken = await protectedLocalStorage.GetAsync<string>("accessToken");
+        if (string.IsNullOrEmpty(accessToken.Value))
+        {
+            await provider.MarkUserAsLoggedOut();
+            navigationManager.NavigateTo("/login");
+            return "Something went wrong!";
+        }
+        
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/auth/register-admin")
+        {
+            Content = JsonContent.Create(user)
+        };
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken.Value);
+        
+        var response = await http.SendAsync(request);
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            navigationManager.NavigateTo("/admin-panel");
+            return null;
+        }
+        var error = await response.Content.ReadAsStringAsync();
+        return error.Contains("Username already exists") ? "Username already exists!" : "An error occurred: " + error;
+    }
 
     public async Task<string> LoginUserAsync(LoginUserDto user)
     {

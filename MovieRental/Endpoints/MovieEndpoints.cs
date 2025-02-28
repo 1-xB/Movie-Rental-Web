@@ -3,6 +3,7 @@ using MovieRental.Data;
 using MovieRental.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using MovieRental.Entity;
+using MovieRental.Services;
 
 namespace MovieRental.Endpoints;
 
@@ -38,8 +39,13 @@ public static class MovieEndpoints
             return movie is null ? Results.NotFound("Movie not found ") : Results.Ok(movie);
         });
 
-        group.MapPost("/", [Authorize(Roles = "Admin")] async (AddMovieDto newMovie, DatabaseContext context) =>
+        group.MapPost("/", [Authorize(Roles = "Admin")] async (HttpContext httpContext, IAuthService authService ,AddMovieDto newMovie, DatabaseContext context) =>
         {
+            var accessToken = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+            if (!authService.IsAccessTokenValid(accessToken))
+            {
+                return Results.Unauthorized();
+            }
             var movie = new Movie
             {
                 Title = newMovie.Title,
@@ -55,7 +61,7 @@ public static class MovieEndpoints
             return Results.Ok(movie);
         });
         
-        group.MapPut("/{id:int}", [Authorize(Roles = "Admin")] async (int id, UpdateMovieDto newMovie, DatabaseContext context) =>
+        group.MapPut("/{id:int}", [Authorize(Roles = "Admin")] async (HttpContext httpContext, IAuthService authService ,int id, UpdateMovieDto newMovie, DatabaseContext context) =>
         {
             var movie = await context.Movies.FindAsync(id);
             if (movie is null)
@@ -75,7 +81,7 @@ public static class MovieEndpoints
             return Results.Ok(movie);
         });
 
-        group.MapDelete("/{id:int}", [Authorize(Roles = "Admin")] async (int id, DatabaseContext context) =>
+        group.MapDelete("/{id:int}", [Authorize(Roles = "Admin")] async (HttpContext httpContext, IAuthService authService , int id, DatabaseContext context) =>
         {
             var movie = await context.Movies.FindAsync(id);
             if (movie is null)
@@ -101,7 +107,7 @@ public static class MovieEndpoints
             return Results.Ok(genre);
         });
         
-        group.MapDelete("/genres/{id:int}", [Authorize(Roles = "Admin")] async (int id, DatabaseContext context) =>
+        group.MapDelete("/genres/{id:int}", [Authorize(Roles = "Admin")] async (HttpContext httpContext, IAuthService authService ,int id, DatabaseContext context) =>
         {
             var genre = await context.Genres.FindAsync(id);
             if (genre is null)
@@ -113,7 +119,7 @@ public static class MovieEndpoints
             return Results.NoContent();
         });
         
-        group.MapPut("/genres/{id:int}", [Authorize (Roles = "Admin")] async (int id, UpdateGenreDto newGenre, DatabaseContext context) =>
+        group.MapPut("/genres/{id:int}", [Authorize (Roles = "Admin")] async (HttpContext httpContext, IAuthService authService , int id, UpdateGenreDto newGenre, DatabaseContext context) =>
         {
             var genre = await context.Genres.FindAsync(id);
             if (genre is null)

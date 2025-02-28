@@ -4,6 +4,9 @@
     padding: 0;
     box-sizing: border-box;
 }
+.validation-message {
+    color: red;
+}
 
 body {
     font-family: 'Poppins', sans-serif;
