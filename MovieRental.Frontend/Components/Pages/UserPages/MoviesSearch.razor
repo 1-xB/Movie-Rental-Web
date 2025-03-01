@@ -3,7 +3,7 @@
 @using MovieRental.Frontend.Components.Pages.LayoutsPages
 @inject GenreService GenreService
 @inject HttpClient Http
-@inject NavigationManager NavigationManager
+@inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
 <CascadingAuthenticationState>
@@ -31,6 +31,12 @@
         }
         else
         {
+            <AuthorizeView Policy="AdminOnly">
+                <Authorized>
+                    <button class="btn btn-primary mb-2" @onclick="NavigateToEditMovie">Edit Movie</button>
+                    <button class="btn btn-primary mb-2" @onclick="DeleteMovie">Delete Movie</button>
+                </Authorized>
+            </AuthorizeView>
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white text-black">
                     <h1 class="card-title">@SearchedMovieModel.Title</h1>
@@ -74,12 +80,24 @@
 
     private void GoBack()
     {
-        NavigationManager.NavigateTo("/movies");   
+        navigationManager.NavigateTo("/movies");   
     }
 
     private void RentMovie()
     {
-        NavigationManager.NavigateTo("/checkout/" + SearchedMovieModel.Id);
+        navigationManager.NavigateTo("/checkout/" + SearchedMovieModel.Id);
+    }
+    
+    
+    
+    private void NavigateToEditMovie()
+    {
+        navigationManager.NavigateTo("admin-panel/edit-movie");
+    }
+
+    private void DeleteMovie()
+    {
+        navigationManager.NavigateTo("admin-panel/delete-movie");
     }
 
 }
