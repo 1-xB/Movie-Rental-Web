@@ -1,6 +1,6 @@
 ﻿@page "/movies/{MovieName}"
-@using MovieRental.Frontend.Models
 @using MovieRental.Frontend.Components.Pages.LayoutsPages
+@using MovieRental.Frontend.Models
 @inject GenreService GenreService
 @inject MovieService MovieService
 @inject HttpClient Http
@@ -8,104 +8,105 @@
 @rendermode InteractiveServer
 
 <CascadingAuthenticationState>
-    <PageTitle>
-        @if (SearchedMovieModel is null)
-        {
-            <text>This movie is not available on our website!</text>
-        }
-        else
-        {
-            <text> @SearchedMovieModel.Title </text>
-        }
-    </PageTitle>
+	<PageTitle>
+		@if (SearchedMovieModel is null)
+		{
+			<text>This movie is not available on our website!</text>
+		}
+		else
+		{
+			<text> @SearchedMovieModel.Title </text>
+		}
+	</PageTitle>
 
-    <nav>
-        <NavMenu></NavMenu>
-    </nav>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
 
-    <main class="container mt-4">
-        @if (SearchedMovieModel is null)
-        {
-            <div class="alert alert-warning" role="alert">
-                This movie is not available on our website!
-            </div>
-        }
-        else
-        {
-            <AuthorizeView Policy="AdminOnly">
-                <Authorized>
-                    <button class="btn btn-primary mb-2" @onclick="NavigateToEditMovie">Edit Movie</button>
-                    <button class="btn btn-primary mb-2" @onclick="DeleteMovie">Delete Movie</button>
-                </Authorized>
-            </AuthorizeView>
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white text-black">
-                    <h1 class="card-title">@SearchedMovieModel.Title</h1>
-                    <p class="card-text"><strong>Genre :</strong> @Genres.Where(g => g.Id == @SearchedMovieModel.GenreId).Select(g => g.Name).FirstOrDefault()</p>
-                    <p class="card-text"><strong>Release year:</strong> @SearchedMovieModel.ReleaseYear</p>
-                </div>
-                <div class="card-body">
+	<main class="container mt-4">
+		@if (SearchedMovieModel is null)
+		{
+			<div class="alert alert-warning" role="alert">
+				This movie is not available on our website!
+			</div>
+		}
+		else
+		{
+			<AuthorizeView Policy="AdminOnly">
+				<Authorized>
+					<button class="btn btn-primary mb-2" @onclick="NavigateToEditMovie">Edit Movie</button>
+					<button class="btn btn-primary mb-2" @onclick="DeleteMovie">Delete Movie</button>
+				</Authorized>
+			</AuthorizeView>
+			<div class="card shadow-sm mb-4">
+				<div class="card-header bg-white text-black">
+					<h1 class="card-title">@SearchedMovieModel.Title</h1>
+					<p class="card-text"><strong>Genre
+							:</strong> @Genres.Where(g => g.Id == SearchedMovieModel.GenreId).Select(g => g.Name).FirstOrDefault()
+					</p>
+					<p class="card-text"><strong>Release year:</strong> @SearchedMovieModel.ReleaseYear</p>
+				</div>
+				<div class="card-body">
 
-                    <h4 class="card-title">Description</h4>
-                    <p class="card-text">@SearchedMovieModel.Description</p>
+					<h4 class="card-title">Description</h4>
+					<p class="card-text">@SearchedMovieModel.Description</p>
 
-                    <p class="card-text"><strong>Available copies:</strong> @SearchedMovieModel.AvailableCopies</p>
-                    <p class="card-text"><strong>Price per day:</strong> @SearchedMovieModel.Price $</p>
-                    <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary btn-lg" @onclick="RentMovie">Rent</button>
-                    </div>
-                </div>
-            </div>
-        }
-        <button class="btn btn-secondary mt-3" @onclick="GoBack">Back</button>
-    </main>
+					<p class="card-text"><strong>Available copies:</strong> @SearchedMovieModel.AvailableCopies</p>
+					<p class="card-text"><strong>Price per day:</strong> @SearchedMovieModel.Price $</p>
+					<div class="d-flex justify-content-center">
+						<button class="btn btn-primary btn-lg" @onclick="RentMovie">Rent</button>
+					</div>
+				</div>
+			</div>
+		}
+		<button class="btn btn-secondary mt-3" @onclick="GoBack">Back</button>
+	</main>
 </CascadingAuthenticationState>
 
 @code {
-    [Parameter] public string? MovieName { get; set; }
-    private MovieModel? SearchedMovieModel { get; set; }
-    private List<GenreModel>? Genres { get; set; }
+	[Parameter] public string? MovieName { get; set; }
+	private MovieModel? SearchedMovieModel { get; set; }
+	private List<GenreModel>? Genres { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            SearchedMovieModel = await Http.GetFromJsonAsync<MovieModel>($"api/movie/search?title={MovieName}");
-            Genres = await GenreService.GetGenresAsync(Http);
-        }
-        catch
-        {
-            // ignored
-        }
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			SearchedMovieModel = await Http.GetFromJsonAsync<MovieModel>($"api/movie/search?title={MovieName}");
+			Genres = await GenreService.GetGenresAsync(Http);
+		}
+		catch
+		{
+			// ignored
+		}
+	}
 
-    private void GoBack()
-    {
-        navigationManager.NavigateTo("/movies");
-    }
+	private void GoBack()
+	{
+		navigationManager.NavigateTo("/movies");
+	}
 
-    private void RentMovie()
-    {
-        navigationManager.NavigateTo("/checkout/" + SearchedMovieModel.Id);
-    }
+	private void RentMovie()
+	{
+		navigationManager.NavigateTo("/checkout/" + SearchedMovieModel.Id);
+	}
 
 
+	private void NavigateToEditMovie()
+	{
+		navigationManager.NavigateTo("admin-panel/edit-movie");
+	}
 
-    private void NavigateToEditMovie()
-    {
-        navigationManager.NavigateTo("admin-panel/edit-movie");
-    }
-
-    private async Task DeleteMovie()
-    {
-      if (SearchedMovieModel != null)
-      {
-        var success = await MovieService.DeleteMovieAsync(Http, SearchedMovieModel.Id);
-        if (success)
-        {
-          navigationManager.NavigateTo("/movies");
-        }
-      }
-    }
+	private async Task DeleteMovie()
+	{
+		if (SearchedMovieModel != null)
+		{
+			var success = await MovieService.DeleteMovieAsync(Http, SearchedMovieModel.Id);
+			if (success)
+			{
+				navigationManager.NavigateTo("/movies");
+			}
+		}
+	}
 
 }

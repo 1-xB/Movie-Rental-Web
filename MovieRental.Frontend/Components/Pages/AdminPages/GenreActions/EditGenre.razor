@@ -3,24 +3,24 @@
 @rendermode InteractiveServer
 
 <CascadingAuthenticationState>
-    <nav>
-        <NavMenu></NavMenu>
-    </nav>
-    <main class="container mt-4">
-        <AuthorizeView Policy="AdminOnly">
-            <Authorized>
-                <h1>Edit Genre</h1>
-            </Authorized>
-            <NotAuthorized>
-                <h1>Access denied!</h1>
-                <p>You don't have the necessary permissions to access this page.</p>
-            </NotAuthorized>
-        </AuthorizeView>
-    </main>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
+	<main class="container mt-4">
+		<AuthorizeView Policy="AdminOnly">
+			<Authorized>
+				<h1>Edit Genre</h1>
+			</Authorized>
+			<NotAuthorized>
+				<h1>Access denied!</h1>
+				<p>You don't have the necessary permissions to access this page.</p>
+			</NotAuthorized>
+		</AuthorizeView>
+	</main>
 </CascadingAuthenticationState>
 
 
 
 @code {
-    
+
 }

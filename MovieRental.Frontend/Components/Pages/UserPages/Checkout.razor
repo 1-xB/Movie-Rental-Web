@@ -1,9 +1,9 @@
 ﻿@page "/Checkout/{id:int}"
 @using System.Globalization
 @using System.Net.Http.Headers
+@using MovieRental.Frontend.Components.Pages.LayoutsPages
 @using MovieRental.Frontend.Dtos
 @using MovieRental.Frontend.Models
-@using MovieRental.Frontend.Components.Pages.LayoutsPages
 @rendermode InteractiveServer
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -11,173 +11,180 @@
 
 <PageTitle>Checkout</PageTitle>
 <CascadingAuthenticationState>
-    <nav>
-        <NavMenu></NavMenu>
-    </nav>
-    <main class="container mt-4">
-        <h1>Checkout</h1>
-        @if (Movie is not null && Genres is not null)
-        {
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white text-black">
-                    <h1 class="card-title">@Movie.Title</h1>
-                    <p class="card-text"><strong>Genre :</strong> @Genres.Where(g => g.Id == @Movie.GenreId).Select(g => g.Name).FirstOrDefault()</p>
-                    <p class="card-text"><strong>Release year:</strong> @Movie.ReleaseYear</p>
-                    <p class="card-text"><strong>Available copies:</strong> @Movie.AvailableCopies</p>
-                    <p class="card-text"><strong>Price per day:</strong> @Movie.Price $</p>
-                </div>
-            </div>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
+	<main class="container mt-4">
+		<h1>Checkout</h1>
+		@if (Movie is not null && Genres is not null)
+		{
+			<div class="card shadow-sm mb-4">
+				<div class="card-header bg-white text-black">
+					<h1 class="card-title">@Movie.Title</h1>
+					<p class="card-text"><strong>Genre
+							:</strong> @Genres.Where(g => g.Id == Movie.GenreId).Select(g => g.Name).FirstOrDefault()
+					</p>
+					<p class="card-text"><strong>Release year:</strong> @Movie.ReleaseYear</p>
+					<p class="card-text"><strong>Available copies:</strong> @Movie.AvailableCopies</p>
+					<p class="card-text"><strong>Price per day:</strong> @Movie.Price $</p>
+				</div>
+			</div>
 
-            <h2>Rent</h2>
-            <AuthorizeView>
-                <Authorized>
-                    <EditForm FormName="RentForm" Model="Rent" OnValidSubmit="OnValidRent" class="bg-light p-3" Context="editContext" Enhance>
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
+			<h2>Rent</h2>
+			<AuthorizeView>
+				<Authorized>
+					<EditForm FormName="RentForm" Model="Rent" OnValidSubmit="OnValidRent" class="bg-light p-3"
+					          Context="editContext" Enhance>
+						<DataAnnotationsValidator/>
+						<ValidationSummary/>
 
-                        <div class="mb-3">
-                            <label for="returnDate" class="form-label">Return date: </label>
-                            <InputDate id="returnDate" 
-                                       @bind-Value="@Rent.ReturnDate" 
-                                       class="form-control" 
-                                       Max="@MaxDate" 
-                                       Min="@MinDate"
-                                       @oninput="OnDateChanged">
-                            </InputDate>
-                            <ValidationMessage For="@(() => Rent.ReturnDate)" />
-                            @if (!string.IsNullOrEmpty(ErrorMessage))
-                            {
-                                <div class="alert alert-danger">@ErrorMessage</div>
-                            }
-                        </div>
-                        <div class="mb-3">
-                            <label for="price" class="form-label">Price ($): </label>
-                            <InputText id="price" 
-                                       @bind-Value="@PriceString" 
-                                       class="form-control" 
-                                       disabled>
-                            </InputText>
-                        </div>
-                        <button type="submit" class="btn btn-primary" aria-label="Rent">Rent</button>
-                    </EditForm>
-                </Authorized>
-                <NotAuthorized>
-                    <p>If you want to rent a movie, <a href="/login">log in</a> first!</p>
-                </NotAuthorized>
-            </AuthorizeView>
-        }
-        else
-        {
-            <h1>Loading...</h1>
-        }
-    </main>
+						<div class="mb-3">
+							<label for="returnDate" class="form-label">Return date: </label>
+							<InputDate id="returnDate"
+							           @bind-Value="@Rent.ReturnDate"
+							           class="form-control"
+							           Max="@MaxDate"
+							           Min="@MinDate"
+							           @oninput="OnDateChanged">
+							</InputDate>
+							<ValidationMessage For="@(() => Rent.ReturnDate)"/>
+							@if (!string.IsNullOrEmpty(ErrorMessage))
+							{
+								<div class="alert alert-danger">@ErrorMessage</div>
+							}
+						</div>
+						<div class="mb-3">
+							<label for="price" class="form-label">Price ($): </label>
+							<InputText id="price"
+							           @bind-Value="@PriceString"
+							           class="form-control"
+							           disabled>
+							</InputText>
+						</div>
+						<button type="submit" class="btn btn-primary" aria-label="Rent">Rent</button>
+					</EditForm>
+				</Authorized>
+				<NotAuthorized>
+					<p>If you want to rent a movie, <a href="/login">log in</a> first!</p>
+				</NotAuthorized>
+			</AuthorizeView>
+		}
+		else
+		{
+			<h1>Loading...</h1>
+		}
+	</main>
 </CascadingAuthenticationState>
 
 @code {
-    [Parameter] public int Id { get; set; }
-    private string ErrorMessage { get; set; } = string.Empty;
-    private MovieModel? Movie { get; set; }
-    private List<GenreModel>? Genres { get; set; }
-    public RentMovieDto Rent { get; set; } = new()
-    {
-        ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))
-    };
-    private DateTime MaxDate { get; set; }
-    private DateTime MinDate { get; set; }
-    private decimal Price { get; set; }
-    private string PriceString
-    {
-        get => Price.ToString(CultureInfo.InvariantCulture);
-        set => Price = decimal.TryParse(value, out var result) ? result : 0;
-    }
+	[Parameter] public int Id { get; set; }
+	private string ErrorMessage { get; set; } = string.Empty;
+	private MovieModel? Movie { get; set; }
+	private List<GenreModel>? Genres { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        MaxDate = DateTime.UtcNow.AddDays(30);
-        MinDate = DateTime.UtcNow.AddDays(1); 
-        
-        Movie = await Http.GetFromJsonAsync<MovieModel>($"/api/movie/{Id}");
-        if (Movie is null)
-        {
-            NavigationManager.NavigateTo("/");
-        }
+	public RentMovieDto Rent { get; set; } = new()
+	{
+		ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))
+	};
 
-        if (Movie != null) Price = (decimal)Movie.Price;
-        Genres = await GenreService.GetGenresAsync(Http);
-    }
+	private DateTime MaxDate { get; set; }
+	private DateTime MinDate { get; set; }
+	private decimal Price { get; set; }
 
-    private async Task OnValidRent()
-    {
-        if (Rent.ReturnDate < DateOnly.FromDateTime(DateTime.UtcNow))
-        {
-            Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow);
-            ErrorMessage = "You can't rent a movie for a past date!";
-            return;
-        }
+	private string PriceString
+	{
+		get => Price.ToString(CultureInfo.InvariantCulture);
+		set => Price = decimal.TryParse(value, out var result) ? result : 0;
+	}
 
-        if (Rent.ReturnDate > DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)))
-        {
-            Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30));
-            ErrorMessage = "You can rent the film for a maximum of 30 days - that is, until " + DateTime.UtcNow.AddDays(30).ToShortDateString();
-            return;
-        }
+	protected override async Task OnInitializedAsync()
+	{
+		MaxDate = DateTime.UtcNow.AddDays(30);
+		MinDate = DateTime.UtcNow.AddDays(1);
 
-        ErrorMessage = string.Empty;
-        
-        // INFO
-        // There should be payment logic here, but it's not a real store. 
-        // So we just confirm the rental.
-        Rent.MovieId = Id;
-        Rent.TotalPrice = Price;
-        var accessToken = await LocalStorage.GetAsync<string>("accessToken");
-        if (string.IsNullOrEmpty(accessToken.Value))
-        {
-            NavigationManager.NavigateTo("/login");
-            return;
-        }
-        var request = new HttpRequestMessage(HttpMethod.Post, $"/api/rental/rent-movie")
-        {
-            Content = JsonContent.Create(Rent)
-        };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Value);
-        var response = await Http.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            NavigationManager.NavigateTo("/profile");
-        }
-        else
-        {
-            ErrorMessage = "An error occurred while renting the movie. Please try again later!";
-        }
-    }
+		Movie = await Http.GetFromJsonAsync<MovieModel>($"/api/movie/{Id}");
+		if (Movie is null)
+		{
+			NavigationManager.NavigateTo("/");
+		}
 
-    private void OnDateChanged(ChangeEventArgs e)
-    {
-        if (!DateOnly.TryParse(e.Value?.ToString(), out var newReturnDate)) return;
-        
-        Rent.ReturnDate = newReturnDate;
+		if (Movie != null) Price = (decimal)Movie.Price;
+		Genres = await GenreService.GetGenresAsync(Http);
+	}
 
-        if (Rent.ReturnDate < DateOnly.FromDateTime(DateTime.UtcNow))
-        {
-            Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
-            if (Movie != null) Price = (decimal)Movie.Price;
-            ErrorMessage = "You can't rent a movie for a past date!";
-        }
-        else if (Rent.ReturnDate > DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)))
-        {
-            Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30));
-            if (Movie != null) Price = (decimal)Movie.Price * 30;
-            ErrorMessage = "You can rent the film for a maximum of 30 days - that is, until " + DateTime.UtcNow.AddDays(30).ToShortDateString();
-        }
-        else
-        {
-            ErrorMessage = string.Empty;
-        }
-        
-        var rentalDays = Rent.ReturnDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow).DayNumber;
-        if (Movie != null) Price = rentalDays > 0 ? (decimal)Movie.Price * rentalDays : 0;
-        PriceString = Price.ToString("F2");
-    }
+	private async Task OnValidRent()
+	{
+		if (Rent.ReturnDate < DateOnly.FromDateTime(DateTime.UtcNow))
+		{
+			Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow);
+			ErrorMessage = "You can't rent a movie for a past date!";
+			return;
+		}
+
+		if (Rent.ReturnDate > DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)))
+		{
+			Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30));
+			ErrorMessage = "You can rent the film for a maximum of 30 days - that is, until " + DateTime.UtcNow.AddDays(30).ToShortDateString();
+			return;
+		}
+
+		ErrorMessage = string.Empty;
+
+		// INFO
+		// There should be payment logic here, but it's not a real store. 
+		// So we just confirm the rental.
+		Rent.MovieId = Id;
+		Rent.TotalPrice = Price;
+		var accessToken = await LocalStorage.GetAsync<string>("accessToken");
+		if (string.IsNullOrEmpty(accessToken.Value))
+		{
+			NavigationManager.NavigateTo("/login");
+			return;
+		}
+
+		var request = new HttpRequestMessage(HttpMethod.Post, "/api/rental/rent-movie")
+		{
+			Content = JsonContent.Create(Rent)
+		};
+		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Value);
+		var response = await Http.SendAsync(request);
+		if (response.IsSuccessStatusCode)
+		{
+			NavigationManager.NavigateTo("/profile");
+		}
+		else
+		{
+			ErrorMessage = "An error occurred while renting the movie. Please try again later!";
+		}
+	}
+
+	private void OnDateChanged(ChangeEventArgs e)
+	{
+		if (!DateOnly.TryParse(e.Value?.ToString(), out var newReturnDate)) return;
+
+		Rent.ReturnDate = newReturnDate;
+
+		if (Rent.ReturnDate < DateOnly.FromDateTime(DateTime.UtcNow))
+		{
+			Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+			if (Movie != null) Price = (decimal)Movie.Price;
+			ErrorMessage = "You can't rent a movie for a past date!";
+		}
+		else if (Rent.ReturnDate > DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)))
+		{
+			Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30));
+			if (Movie != null) Price = (decimal)Movie.Price * 30;
+			ErrorMessage = "You can rent the film for a maximum of 30 days - that is, until " + DateTime.UtcNow.AddDays(30).ToShortDateString();
+		}
+		else
+		{
+			ErrorMessage = string.Empty;
+		}
+
+		var rentalDays = Rent.ReturnDate.DayNumber - DateOnly.FromDateTime(DateTime.UtcNow).DayNumber;
+		if (Movie != null) Price = rentalDays > 0 ? (decimal)Movie.Price * rentalDays : 0;
+		PriceString = Price.ToString("F2");
+	}
 
 }
 

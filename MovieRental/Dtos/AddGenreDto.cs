@@ -1,6 +1,5 @@
 ﻿namespace MovieRental.Dtos;
 
-public class AddGenreDto
-{
-    public required string Name { get; set; }
+public class AddGenreDto {
+	public required string Name { get; set; }
 }

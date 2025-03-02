@@ -1,93 +1,100 @@
 ﻿@page "/register"
+@using MovieRental.Frontend.Components.Pages.LayoutsPages
 @using MovieRental.Frontend.Dtos
 @using MovieRental.Frontend.Models
-@using MovieRental.Frontend.Services
-@using MovieRental.Frontend.Components.Pages.LayoutsPages
 @inject UserService UserService
 @rendermode InteractiveServer
 
 
 
 <CascadingAuthenticationState>
-    
-    <PageTitle>Register</PageTitle>
-    <nav>
-        <NavMenu></NavMenu>
-    </nav>
-    
-    <main>
-        <h1>Register</h1>
-        <AuthorizeView>
-            <Authorized>
-                <p>You are already logged in. If you want to login with another account, please logout first.</p>
-            </Authorized>
-            <NotAuthorized>
-                <EditForm FormName="RegisterForm" Model="@RegisterModel" OnValidSubmit="HandleSubmitAsync" Context="editContext" Enhance>
-                    <DataAnnotationsValidator />
-                    <ValidationSummary/>
 
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username:</label>
-                        <InputText class="form-control" id="username" @bind-Value="@RegisterModel.Username" autocomplete="username" placeholder="Enter your username"></InputText>
-                        <ValidationMessage For="@(() => RegisterModel.Username)"/>
-                    </div>
+	<PageTitle>Register</PageTitle>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email:</label>
-                        <InputText class="form-control" id="email" @bind-Value="@RegisterModel.Mail" type="email" aria-describedby="emailHelp" autocomplete="email" placeholder="Enter your email"></InputText>
-                        <ValidationMessage For="@(() => @RegisterModel.Mail)"/>
-                        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                    </div>
+	<main>
+		<h1>Register</h1>
+		<AuthorizeView>
+			<Authorized>
+				<p>You are already logged in. If you want to login with another account, please logout first.</p>
+			</Authorized>
+			<NotAuthorized>
+				<EditForm FormName="RegisterForm" Model="@RegisterModel" OnValidSubmit="HandleSubmitAsync"
+				          Context="editContext" Enhance>
+					<DataAnnotationsValidator/>
+					<ValidationSummary/>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password:</label>
-                        <InputText class="form-control" id="password" @bind-Value="@RegisterModel.Password" type="password" autocomplete="new-password" placeholder="Enter your password"></InputText>
-                        <ValidationMessage For="@(() => RegisterModel.Password)"/>
-                    </div>
+					<div class="mb-3">
+						<label for="username" class="form-label">Username:</label>
+						<InputText class="form-control" id="username" @bind-Value="@RegisterModel.Username"
+						           autocomplete="username" placeholder="Enter your username"></InputText>
+						<ValidationMessage For="@(() => RegisterModel.Username)"/>
+					</div>
 
-                    <div class="mb-3">
-                        <label for="password-confirm" class="form-label">Confirm password:</label>
-                        <InputText class="form-control" id="password-confirm" @bind-Value="RegisterModel.ConfirmPassword" type="password" autocomplete="new-password" placeholder="Confirm your password"></InputText>
-                        <ValidationMessage For="@(() => RegisterModel.ConfirmPassword)"/>
-                    </div>
+					<div class="mb-3">
+						<label for="email" class="form-label">Email:</label>
+						<InputText class="form-control" id="email" @bind-Value="@RegisterModel.Mail" type="email"
+						           aria-describedby="emailHelp" autocomplete="email"
+						           placeholder="Enter your email"></InputText>
+						<ValidationMessage For="@(() => RegisterModel.Mail)"/>
+						<div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+					</div>
 
-                    @if (ServerMessage is not null)
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            @ServerMessage
-                        </div>
-                    }
+					<div class="mb-3">
+						<label for="password" class="form-label">Password:</label>
+						<InputText class="form-control" id="password" @bind-Value="@RegisterModel.Password"
+						           type="password" autocomplete="new-password"
+						           placeholder="Enter your password"></InputText>
+						<ValidationMessage For="@(() => RegisterModel.Password)"/>
+					</div>
 
-                    <button type="submit" class="btn btn-primary" aria-label="Register">Register</button>
+					<div class="mb-3">
+						<label for="password-confirm" class="form-label">Confirm password:</label>
+						<InputText class="form-control" id="password-confirm"
+						           @bind-Value="RegisterModel.ConfirmPassword" type="password"
+						           autocomplete="new-password" placeholder="Confirm your password"></InputText>
+						<ValidationMessage For="@(() => RegisterModel.ConfirmPassword)"/>
+					</div>
 
-                </EditForm>
-            </NotAuthorized>
-        </AuthorizeView>
-    </main>
-    
+					@if (ServerMessage is not null)
+					{
+						<div class="alert alert-danger" role="alert">
+							@ServerMessage
+						</div>
+					}
 
-    
+					<button type="submit" class="btn btn-primary" aria-label="Register">Register</button>
+
+				</EditForm>
+			</NotAuthorized>
+		</AuthorizeView>
+	</main>
+
+
 </CascadingAuthenticationState>
 
 @code {
-    public RegisterModel? RegisterModel { get; set; } = new RegisterModel();
-    private string? ServerMessage { get; set; }
+	public RegisterModel? RegisterModel { get; set; } = new();
+	private string? ServerMessage { get; set; }
 
-    private async Task HandleSubmitAsync()
-    {
-        try
-        {
-            var user = new RegisterUserDto
-            {
-                Username = RegisterModel.Username,
-                Mail = RegisterModel.Mail,
-                Password = RegisterModel.Password
-            };
-            ServerMessage = await UserService.RegisterUserAsync(user);
-        }
-        catch (Exception ex)
-        {
-            ServerMessage = $"An error occurred : {ex.Message}";
-        }
-    }
+	private async Task HandleSubmitAsync()
+	{
+		try
+		{
+			var user = new RegisterUserDto
+			{
+				Username = RegisterModel.Username,
+				Mail = RegisterModel.Mail,
+				Password = RegisterModel.Password
+			};
+			ServerMessage = await UserService.RegisterUserAsync(user);
+		}
+		catch (Exception ex)
+		{
+			ServerMessage = $"An error occurred : {ex.Message}";
+		}
+	}
+
 }

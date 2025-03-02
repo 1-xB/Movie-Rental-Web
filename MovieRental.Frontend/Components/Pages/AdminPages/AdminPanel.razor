@@ -4,58 +4,61 @@
 @inject NavigationManager navigationManager
 
 <CascadingAuthenticationState>
-    <nav>
-        <NavMenu></NavMenu>
-    </nav>
-    <main class="container mt-4">
-        <AuthorizeView Policy="AdminOnly">
-            <Authorized>
-                <h1>Admin panel</h1>
-                <p>Welcome, @context.User.Identity?.Name!</p>
-                <p>Here you can manage the movies in the database.</p>
-                
-                <div class="btn-group d-flex flex-column" role="group" aria-label="User actions">
-                    <h5>User Actions</h5>
-                    <button class="btn btn-primary mb-2" @onclick="NavigateToAddUser">Add User</button>
-                    <button class="btn btn-primary mb-2" @onclick="NavigateToAddAdministrator">Add Administrator</button>
-                </div>
-                <div class="btn-group d-flex flex-column" role="group" aria-label="Movie actions">
-                    <h5>Movie Actions</h5>
-                    <button class="btn btn-primary mb-2" @onclick="NavigateToAddMovie">Add Movie</button>
-                </div>
-                <div class="btn-group d-flex flex-column" role="group" aria-label="Genre actions">
-                    <h5>Genre Actions</h5>
-                    <button class="btn btn-primary mb-2" @onclick="NavigateToAddGenre">Add Genre</button>
-                </div>
-                
-            </Authorized>
-            <NotAuthorized>
-                <h1>Access denied!</h1>
-                <p>You don't have the necessary permissions to access this page.</p>
-            </NotAuthorized>
-        </AuthorizeView>
-    </main>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
+	<main class="container mt-4">
+		<AuthorizeView Policy="AdminOnly">
+			<Authorized>
+				<h1>Admin panel</h1>
+				<p>Welcome, @context.User.Identity?.Name!</p>
+				<p>Here you can manage the movies in the database.</p>
+
+				<div class="btn-group d-flex flex-column" role="group" aria-label="User actions">
+					<h5>User Actions</h5>
+					<button class="btn btn-primary mb-2" @onclick="NavigateToAddUser">Add User</button>
+					<button class="btn btn-primary mb-2" @onclick="NavigateToAddAdministrator">Add Administrator
+					</button>
+				</div>
+				<div class="btn-group d-flex flex-column" role="group" aria-label="Movie actions">
+					<h5>Movie Actions</h5>
+					<button class="btn btn-primary mb-2" @onclick="NavigateToAddMovie">Add Movie</button>
+				</div>
+				<div class="btn-group d-flex flex-column" role="group" aria-label="Genre actions">
+					<h5>Genre Actions</h5>
+					<button class="btn btn-primary mb-2" @onclick="NavigateToAddGenre">Add Genre</button>
+				</div>
+
+			</Authorized>
+			<NotAuthorized>
+				<h1>Access denied!</h1>
+				<p>You don't have the necessary permissions to access this page.</p>
+			</NotAuthorized>
+		</AuthorizeView>
+	</main>
 </CascadingAuthenticationState>
 
 @code {
-    private void NavigateToAddUser()
-    {
-        navigationManager.NavigateTo("admin-panel/add-user");
-    }
-    
-    private void NavigateToAddAdministrator()
-    {
-        navigationManager.NavigateTo("admin-panel/add-administrator");
-    }
 
-    private void NavigateToAddMovie()
-    {
-        navigationManager.NavigateTo("admin-panel/add-movie");
-    }
-    
+	private void NavigateToAddUser()
+	{
+		navigationManager.NavigateTo("admin-panel/add-user");
+	}
 
-    private void NavigateToAddGenre()
-    {
-        navigationManager.NavigateTo("admin-panel/add-genre");
-    }
+	private void NavigateToAddAdministrator()
+	{
+		navigationManager.NavigateTo("admin-panel/add-administrator");
+	}
+
+	private void NavigateToAddMovie()
+	{
+		navigationManager.NavigateTo("admin-panel/add-movie");
+	}
+
+
+	private void NavigateToAddGenre()
+	{
+		navigationManager.NavigateTo("admin-panel/add-genre");
+	}
+
 }

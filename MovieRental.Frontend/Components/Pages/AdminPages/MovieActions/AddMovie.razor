@@ -9,121 +9,121 @@
 @inject NavigationManager navigationManager
 
 <CascadingAuthenticationState>
-    <nav>
-        <NavMenu></NavMenu>
-    </nav>
-    <main class="container mt-4">
-        @if (Genres is null)
-        {
-            <h3>Loading...</h3>
-        }
-        else
-        {
-            <AuthorizeView Policy="AdminOnly">
-                <Authorized>
-                    <EditForm Model="NewMovie" OnValidSubmit="HandleValidSubmitAsync" Context="editContext">
-                        <DataAnnotationsValidator/>
-                        <ValidationSummary/>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
+	<main class="container mt-4">
+		@if (Genres is null)
+		{
+			<h3>Loading...</h3>
+		}
+		else
+		{
+			<AuthorizeView Policy="AdminOnly">
+				<Authorized>
+					<EditForm Model="NewMovie" OnValidSubmit="HandleValidSubmitAsync" Context="editContext">
+						<DataAnnotationsValidator/>
+						<ValidationSummary/>
 
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title:</label>
-                            <InputText class="form-control" id="title" @bind-Value="@NewMovie.Title"
-                                       autocomplete="title" placeholder="Enter the title of the movie"></InputText>
-                            <ValidationMessage For="@(() => NewMovie.Title)"/>
-                        </div>
+						<div class="mb-3">
+							<label for="title" class="form-label">Title:</label>
+							<InputText class="form-control" id="title" @bind-Value="@NewMovie.Title"
+							           autocomplete="title" placeholder="Enter the title of the movie"></InputText>
+							<ValidationMessage For="@(() => NewMovie.Title)"/>
+						</div>
 
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description:</label>
-                            <InputText class="form-control" id="description" @bind-Value="@NewMovie.Description"
-                                       autocomplete="description"
-                                       placeholder="Enter the description of the movie"></InputText>
-                            <ValidationMessage For="@(() => NewMovie.Description)"/>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="price" class="form-label">Price:</label>
-                            <InputNumber class="form-control" id="price" @bind-Value="@NewMovie.Price"
-                                         autocomplete="price"
-                                         placeholder="Enter the price"></InputNumber>                          
-                            <ValidationMessage For="@(() => NewMovie.Price)"/>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="genre" class="form-label">Genre:</label>
-                            <InputSelect class="form-control" id="genre" @bind-Value="@NewMovie.GenreId">
-                                @foreach (var genre in Genres)
-                                {
-                                    <option value="@genre.Id">@genre.Name</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="@(() => NewMovie.GenreId)"/>
-                        </div>
+						<div class="mb-3">
+							<label for="description" class="form-label">Description:</label>
+							<InputText class="form-control" id="description" @bind-Value="@NewMovie.Description"
+							           autocomplete="description"
+							           placeholder="Enter the description of the movie"></InputText>
+							<ValidationMessage For="@(() => NewMovie.Description)"/>
+						</div>
 
-                        <div class="mb-3">
-                            <label for="release-year" class="form-label ">Release year:</label>
-                            <InputDate class="form-control" id="release-year" @bind-Value="@NewMovie.ReleaseYear"
-                                       placeholder="Enter the release year of the movie"
-                                       Max="@MaxDate" 
-                                       Min="@MinDate"></InputDate>
-                            <ValidationMessage For="@(() => NewMovie.ReleaseYear)"/>
-                        </div>
+						<div class="mb-3">
+							<label for="price" class="form-label">Price:</label>
+							<InputNumber class="form-control" id="price" @bind-Value="@NewMovie.Price"
+							             autocomplete="price"
+							             placeholder="Enter the price"></InputNumber>
+							<ValidationMessage For="@(() => NewMovie.Price)"/>
+						</div>
 
-                        <div class="mb-3">
-                            <label for="total-copies" class="form-label ">Total Copies:</label>
-                            <InputNumber class="form-control" id="total-copies" @bind-Value="@NewMovie.TotalCopies"
-                                         placeholder="Enter the number of movie copies"></InputNumber >                       
-                            <ValidationMessage For="@(() => NewMovie.TotalCopies)"/>
-                        </div>
+						<div class="mb-3">
+							<label for="genre" class="form-label">Genre:</label>
+							<InputSelect class="form-control" id="genre" @bind-Value="@NewMovie.GenreId">
+								@foreach (var genre in Genres)
+								{
+									<option value="@genre.Id">@genre.Name</option>
+								}
+							</InputSelect>
+							<ValidationMessage For="@(() => NewMovie.GenreId)"/>
+						</div>
 
-                        @if (ErrorMessage is not null)
-                        {
-                            <div class="alert alert-danger" role="alert">
-                                @ErrorMessage
-                            </div>
-                        }
+						<div class="mb-3">
+							<label for="release-year" class="form-label ">Release year:</label>
+							<InputDate class="form-control" id="release-year" @bind-Value="@NewMovie.ReleaseYear"
+							           placeholder="Enter the release year of the movie"
+							           Max="@MaxDate"
+							           Min="@MinDate"></InputDate>
+							<ValidationMessage For="@(() => NewMovie.ReleaseYear)"/>
+						</div>
 
-                        <button type="submit" class="btn btn-primary" aria-label="Add movie">Add movie</button>
-                    </EditForm>
-                </Authorized>
-                <NotAuthorized>
-                    <h1>Access denied!</h1>
-                    <p>You don't have the necessary permissions to access this page.</p>
-                </NotAuthorized>
-            </AuthorizeView>
-        }
+						<div class="mb-3">
+							<label for="total-copies" class="form-label ">Total Copies:</label>
+							<InputNumber class="form-control" id="total-copies" @bind-Value="@NewMovie.TotalCopies"
+							             placeholder="Enter the number of movie copies"></InputNumber>
+							<ValidationMessage For="@(() => NewMovie.TotalCopies)"/>
+						</div>
 
-    </main>
+						@if (ErrorMessage is not null)
+						{
+							<div class="alert alert-danger" role="alert">
+								@ErrorMessage
+							</div>
+						}
+
+						<button type="submit" class="btn btn-primary" aria-label="Add movie">Add movie</button>
+					</EditForm>
+				</Authorized>
+				<NotAuthorized>
+					<h1>Access denied!</h1>
+					<p>You don't have the necessary permissions to access this page.</p>
+				</NotAuthorized>
+			</AuthorizeView>
+		}
+
+	</main>
 </CascadingAuthenticationState>
 
 @code {
-    AddMovieDto NewMovie { get; set; } = new();
-    List<GenreModel>? Genres { get; set; }
-    string? ErrorMessage { get; set; }
-    DateTime MinDate { get; set; }
-    DateTime MaxDate  { get; set; }
+	AddMovieDto NewMovie { get; } = new();
+	List<GenreModel>? Genres { get; set; }
+	string? ErrorMessage { get; set; }
+	DateTime MinDate { get; set; }
+	DateTime MaxDate { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        MaxDate = DateTime.UtcNow.AddDays(1); 
-        NewMovie.ReleaseYear = DateOnly.FromDateTime(DateTime.UtcNow);
-        MinDate = new DateTime(1900, 1, 1);
-        Genres = await GenreService.GetGenresAsync(Http);
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		MaxDate = DateTime.UtcNow.AddDays(1);
+		NewMovie.ReleaseYear = DateOnly.FromDateTime(DateTime.UtcNow);
+		MinDate = new DateTime(1900, 1, 1);
+		Genres = await GenreService.GetGenresAsync(Http);
+	}
 
-    private async Task HandleValidSubmitAsync()
-    {
-        ErrorMessage = null;
-        NewMovie.AvailableCopies = NewMovie.TotalCopies;
-        var newMovieCreated = await MovieService.AddMovieAsync(Http, NewMovie);
+	private async Task HandleValidSubmitAsync()
+	{
+		ErrorMessage = null;
+		NewMovie.AvailableCopies = NewMovie.TotalCopies;
+		var newMovieCreated = await MovieService.AddMovieAsync(Http, NewMovie);
 
-        if (newMovieCreated)
-        {
-            navigationManager.NavigateTo("/admin-panel");
-        }
-        else
-        {
-            ErrorMessage = "Something went wrong! Please try again later.";
-        }
-    }
+		if (newMovieCreated)
+		{
+			navigationManager.NavigateTo("/admin-panel");
+		}
+		else
+		{
+			ErrorMessage = "Something went wrong! Please try again later.";
+		}
+	}
 
 }

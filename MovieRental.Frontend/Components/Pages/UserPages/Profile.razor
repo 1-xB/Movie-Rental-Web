@@ -1,7 +1,8 @@
 ﻿@page "/profile"
 @using System.Net
-@using MovieRental.Frontend.Models
+@using System.Net.Http.Headers
 @using MovieRental.Frontend.Components.Pages.LayoutsPages
+@using MovieRental.Frontend.Models
 @inject GenreService GenreService
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -10,173 +11,177 @@
 <PageTitle>My profile</PageTitle>
 
 <CascadingAuthenticationState>
-    <nav>
-        <NavMenu></NavMenu>
-    </nav>
-    <main class="container mt-4">
-        <AuthorizeView>
-            <Authorized>
-                <h1>Welcome, @context.User.Identity?.Name!</h1>
-                @if (!_dataReceived || _genres is null || _movies is null)
-                {
-                    <h1>Loading...</h1>
-                }
-                else if (_rentedMovies is null || _rentedMovies.Count == 0)
-                {
-                    <h1>You haven't rented anything!</h1>
-                }
-                else
-                {
-                    
-                    var rentedMovies = _rentedMovies.Where(m => !m.Returned).ToList();
-                    @if (rentedMovies.Count > 0)
-                    {
-                        <h4 style="text-align: center">Rented movies: </h4>
-                        @foreach (var movie in rentedMovies)
-                        {
-                            var matchedMovie = _movies?.FirstOrDefault(m => m.Id == movie.MovieId);
-                            if (matchedMovie is null)
-                            {
-                                continue;
-                            }
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
+	<main class="container mt-4">
+		<AuthorizeView>
+			<Authorized>
+				<h1>Welcome, @context.User.Identity?.Name!</h1>
+				@if (!_dataReceived || _genres is null || _movies is null)
+				{
+					<h1>Loading...</h1>
+				}
+				else if (_rentedMovies is null || _rentedMovies.Count == 0)
+				{
+					<h1>You haven't rented anything!</h1>
+				}
+				else
+				{
+					var rentedMovies = _rentedMovies.Where(m => !m.Returned).ToList();
+					@if (rentedMovies.Count > 0)
+					{
+						<h4 style="text-align: center">Rented movies: </h4>
+						@foreach (var movie in rentedMovies)
+						{
+							var matchedMovie = _movies?.FirstOrDefault(m => m.Id == movie.MovieId);
+							if (matchedMovie is null)
+							{
+								continue;
+							}
 
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">@matchedMovie.Title</h5>
-                                    <p class="card-text">@matchedMovie.Description</p>
-                                    <p class="card-text"><strong>Price:</strong> @movie.TotalPrice $</p>
-                                    <p class="card-text"><strong>Genre:</strong> @_genres?.FirstOrDefault(g => g.Id == matchedMovie.GenreId)?.Name</p>
-                                    <p class="card-text">Rental date :  @movie.RentalDate</p>
-                                    <p class="card-text">Movie has to be returned on : @movie.ReturnDate</p>
-                                    <button class="btn btn-danger" @onclick="() => ReturnMovie(movie.Id)">Return</button>
-                                </div>
-                            </div>
-                        }
-                    }
-                    
-                    var returnedMovies = _rentedMovies.Where(m => m.Returned).ToList();
-                    @if (returnedMovies.Count > 0)
-                    {
-                        <h4 style="text-align: center">Returned movies</h4>
-                        @foreach (var movie in returnedMovies)
-                        {
-                            var matchedMovie = _movies?.FirstOrDefault(m => m.Id == movie.MovieId);
-                            if (matchedMovie is null)
-                            {
-                                continue;
-                            }
+							<div class="card mb-3">
+								<div class="card-body">
+									<h5 class="card-title">@matchedMovie.Title</h5>
+									<p class="card-text">@matchedMovie.Description</p>
+									<p class="card-text"><strong>Price:</strong> @movie.TotalPrice $</p>
+									<p class="card-text">
+										<strong>Genre:</strong> @_genres?.FirstOrDefault(g => g.Id == matchedMovie.GenreId)?.Name
+									</p>
+									<p class="card-text">Rental date : @movie.RentalDate</p>
+									<p class="card-text">Movie has to be returned on : @movie.ReturnDate</p>
+									<button class="btn btn-danger" @onclick="() => ReturnMovie(movie.Id)">Return
+									</button>
+								</div>
+							</div>
+						}
+					}
 
-                            <div class="card mb-3" style="background-color: #e8e6e6; opacity: 0.9">
-                                <div class="card-body">
-                                    <h5 class="card-title">@matchedMovie.Title</h5>
-                                    <p class="card-text">@matchedMovie.Description</p>
-                                    <p class="card-text"><strong>Price:</strong> @movie.TotalPrice $</p>
-                                    <p class="card-text"><strong>Genre:</strong> @_genres?.FirstOrDefault(g => g.Id == matchedMovie.GenreId)?.Name</p>
-                                    <p class="card-text">Rental date :  @movie.RentalDate</p>
-                                    <p class="card-text">Movie has to be returned on : @movie.ReturnDate</p>
-                                </div>
-                            </div>
-                        }
-                    }
-                   
-                }
-            </Authorized>
-        <NotAuthorized>
-            <h1>To view your profile you must first log in!</h1>
-        </NotAuthorized>
-    </AuthorizeView>
-        
-    </main>
+					var returnedMovies = _rentedMovies.Where(m => m.Returned).ToList();
+					@if (returnedMovies.Count > 0)
+					{
+						<h4 style="text-align: center">Returned movies</h4>
+						@foreach (var movie in returnedMovies)
+						{
+							var matchedMovie = _movies?.FirstOrDefault(m => m.Id == movie.MovieId);
+							if (matchedMovie is null)
+							{
+								continue;
+							}
+
+							<div class="card mb-3" style="background-color: #e8e6e6; opacity: 0.9">
+								<div class="card-body">
+									<h5 class="card-title">@matchedMovie.Title</h5>
+									<p class="card-text">@matchedMovie.Description</p>
+									<p class="card-text"><strong>Price:</strong> @movie.TotalPrice $</p>
+									<p class="card-text">
+										<strong>Genre:</strong> @_genres?.FirstOrDefault(g => g.Id == matchedMovie.GenreId)?.Name
+									</p>
+									<p class="card-text">Rental date : @movie.RentalDate</p>
+									<p class="card-text">Movie has to be returned on : @movie.ReturnDate</p>
+								</div>
+							</div>
+						}
+					}
+				}
+			</Authorized>
+			<NotAuthorized>
+				<h1>To view your profile you must first log in!</h1>
+			</NotAuthorized>
+		</AuthorizeView>
+
+	</main>
 
 </CascadingAuthenticationState>
 
 @code {
-    private List<RentalModel>? _rentedMovies;
-    private List<GenreModel>? _genres;
-    private List<MovieModel>? _movies;
-    private bool _dataReceived;
-    private bool _initialized;
+	private List<RentalModel>? _rentedMovies;
+	private List<GenreModel>? _genres;
+	private List<MovieModel>? _movies;
+	private bool _dataReceived;
+	private bool _initialized;
 
-    protected override async Task OnInitializedAsync()
-    {
-        _genres = await GenreService.GetGenresAsync(Http);
-        _movies = await Http.GetFromJsonAsync<List<MovieModel>>("api/movie");
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		_genres = await GenreService.GetGenresAsync(Http);
+		_movies = await Http.GetFromJsonAsync<List<MovieModel>>("api/movie");
+	}
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !_initialized)
-        {
-            var accessToken = await LocalStorage.GetAsync<string>("accessToken");
-            await GetRentalMovies(accessToken);
-        }
-        
-    }
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && !_initialized)
+		{
+			var accessToken = await LocalStorage.GetAsync<string>("accessToken");
+			await GetRentalMovies(accessToken);
+		}
+	}
 
-    private async Task GetRentalMovies(ProtectedBrowserStorageResult<string> accessToken)
-    {
-        if (!string.IsNullOrEmpty(accessToken.Value))
-        {
-            ResetData();
-            var request = new HttpRequestMessage(HttpMethod.Get, "api/rental/rent-movie");
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken.Value);
+	private async Task GetRentalMovies(ProtectedBrowserStorageResult<string> accessToken)
+	{
+		if (!string.IsNullOrEmpty(accessToken.Value))
+		{
+			ResetData();
+			var request = new HttpRequestMessage(HttpMethod.Get, "api/rental/rent-movie");
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Value);
 
-            var response = await Http.SendAsync(request);
-            await HandleRentalMoviesResponse(response);
-        }
-    }
+			var response = await Http.SendAsync(request);
+			await HandleRentalMoviesResponse(response);
+		}
+	}
 
-    private async Task HandleRentalMoviesResponse(HttpResponseMessage response)
-    {
-        if (response.StatusCode == HttpStatusCode.OK)
-        {
-            _rentedMovies = await response.Content.ReadFromJsonAsync<List<RentalModel>?>() ?? new List<RentalModel>();
-        }
-        else if (response.StatusCode == HttpStatusCode.NoContent)
-        {
-            _rentedMovies = new List<RentalModel>();
-        }
-        else if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            await Provider.MarkUserAsLoggedOut();
-            NavigationManager.NavigateTo("/login");
-        }
-        _dataReceived = true;
-        _initialized = true;
-        StateHasChanged();
-    }
+	private async Task HandleRentalMoviesResponse(HttpResponseMessage response)
+	{
+		if (response.StatusCode == HttpStatusCode.OK)
+		{
+			_rentedMovies = await response.Content.ReadFromJsonAsync<List<RentalModel>?>() ?? new List<RentalModel>();
+		}
+		else if (response.StatusCode == HttpStatusCode.NoContent)
+		{
+			_rentedMovies = new List<RentalModel>();
+		}
+		else if (response.StatusCode == HttpStatusCode.Unauthorized)
+		{
+			await Provider.MarkUserAsLoggedOut();
+			NavigationManager.NavigateTo("/login");
+		}
 
-    private void ResetData()
-    {
-        _dataReceived = false;
-        _initialized = false;
-        _rentedMovies = null;
-    }
+		_dataReceived = true;
+		_initialized = true;
+		StateHasChanged();
+	}
 
-    private async Task ReturnMovie(int movieId)
-    {
-        var accessToken = await LocalStorage.GetAsync<string>("accessToken");
-        if (!string.IsNullOrEmpty(accessToken.Value))
-        {
-            if (!await Provider.IsTokenValid(accessToken.Value))
-            {
-                await Provider.RefreshTokens();
-                accessToken = await LocalStorage.GetAsync<string>("accessToken");
-            }
-            var request = new HttpRequestMessage(HttpMethod.Post, $"api/rental/rent-movie/return?id={movieId}");
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken.Value);
+	private void ResetData()
+	{
+		_dataReceived = false;
+		_initialized = false;
+		_rentedMovies = null;
+	}
 
-            var response = await Http.SendAsync(request);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                await GetRentalMovies(accessToken);
-            }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                await Provider.MarkUserAsLoggedOut();
-                NavigationManager.NavigateTo("/login");
-            }
-        }
-        
-    }
+	private async Task ReturnMovie(int movieId)
+	{
+		var accessToken = await LocalStorage.GetAsync<string>("accessToken");
+		if (!string.IsNullOrEmpty(accessToken.Value))
+		{
+			if (!await Provider.IsTokenValid(accessToken.Value))
+			{
+				await Provider.RefreshTokens();
+				accessToken = await LocalStorage.GetAsync<string>("accessToken");
+			}
+
+			var request = new HttpRequestMessage(HttpMethod.Post, $"api/rental/rent-movie/return?id={movieId}");
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Value);
+
+			var response = await Http.SendAsync(request);
+			if (response.StatusCode == HttpStatusCode.OK)
+			{
+				await GetRentalMovies(accessToken);
+			}
+			else if (response.StatusCode == HttpStatusCode.Unauthorized)
+			{
+				await Provider.MarkUserAsLoggedOut();
+				NavigationManager.NavigateTo("/login");
+			}
+		}
+	}
+
 }

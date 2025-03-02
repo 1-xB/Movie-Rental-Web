@@ -6,40 +6,42 @@
 @layout MainLayout
 
 <CascadingAuthenticationState>
-    <PageTitle>Home</PageTitle>
-    <nav>
-        <NavMenu></NavMenu>
-    </nav>
+	<PageTitle>Home</PageTitle>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
 
-    <main>
-    <AuthorizeView>
-        <Authorized>
-            <h1>Welcome, @context.User.Identity?.Name!</h1>
-        </Authorized>
-        <NotAuthorized>
-            <h1>Welcome!</h1>
-        </NotAuthorized>
-    </AuthorizeView>
+	<main>
+		<AuthorizeView>
+			<Authorized>
+				<h1>Welcome, @context.User.Identity?.Name!</h1>
+			</Authorized>
+			<NotAuthorized>
+				<h1>Welcome!</h1>
+			</NotAuthorized>
+		</AuthorizeView>
 
-    <p>
-        Movie Rental is a movie rental application. You can find the latest premieres, cinema classics and many other movies.
-    </p>
-    
-    <AuthorizeView>
-        <Authorized>
-            <p>
-                <a href="/profile">See your favorite movies</a>
-            </p>
-        </Authorized>
-        <NotAuthorized>
-            <p>
-                <a href=“/register”>register</a> or <a href=“/login”>login</a> to start using the application.
-            </p>
-        </NotAuthorized>
-    </AuthorizeView>
-   
-    </main>
+		<p>
+			Movie Rental is a movie rental application. You can find the latest premieres, cinema classics and many
+			other movies.
+		</p>
+
+		<AuthorizeView>
+			<Authorized>
+				<p>
+					<a href="/profile">See your favorite movies</a>
+				</p>
+			</Authorized>
+			<NotAuthorized>
+				<p>
+					<a href="“/register”">register</a> or <a href="“/login”">login</a> to start using the application.
+				</p>
+			</NotAuthorized>
+		</AuthorizeView>
+
+	</main>
 </CascadingAuthenticationState>
+
 @code {
-    
+
 }
