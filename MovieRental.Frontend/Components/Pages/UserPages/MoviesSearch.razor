@@ -94,7 +94,7 @@
 
 	private void NavigateToEditMovie()
 	{
-		navigationManager.NavigateTo("admin-panel/edit-movie");
+		navigationManager.NavigateTo("admin-panel/edit-movie/" + SearchedMovieModel.Id);
 	}
 
 	private async Task DeleteMovie()

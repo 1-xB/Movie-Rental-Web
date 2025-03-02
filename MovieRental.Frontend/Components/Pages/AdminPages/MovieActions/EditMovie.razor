@@ -1,5 +1,11 @@
-﻿@page "/admin-panel/edit-movie"
+﻿@page "/admin-panel/edit-movie/{Id:int}"
 @using MovieRental.Frontend.Components.Pages.LayoutsPages
+@using MovieRental.Frontend.Dtos
+@using MovieRental.Frontend.Models
+@inject MovieService MovieService
+@inject HttpClient Http
+@inject GenreService GenreService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <CascadingAuthenticationState>
@@ -9,7 +15,86 @@
 	<main class="container mt-4">
 		<AuthorizeView Policy="AdminOnly">
 			<Authorized>
-				<h1>Edit Movie</h1>
+				@if (EditedMovie is null )
+				{
+					<div class="alert alert-warning" role="alert">
+						This movie is not available on our website!
+					</div>
+				}
+				else if (Genres is null)
+				{
+					<div class="alert alert-warning" role="alert">
+						There are no genres available!
+					</div>
+				}
+				else
+				{
+					<EditForm Model="EditedMovie" OnValidSubmit="HandleValidSubmitAsync" Context="editContext">
+						<div class="mb-3">
+							<label for="title" class="form-label">Title:</label>
+							<InputText class="form-control" id="title" @bind-Value="@EditedMovie.Title"
+							           autocomplete="title" placeholder="Enter the title of the movie"></InputText>
+							<ValidationMessage For="@(() => EditedMovie.Title)"/>
+						</div>
+
+						<div class="mb-3">
+							<label for="description" class="form-label">Description:</label>
+							<InputText class="form-control" id="description" @bind-Value="@EditedMovie.Description"
+							           autocomplete="description"
+							           placeholder="Enter the description of the movie"></InputText>
+							<ValidationMessage For="@(() => EditedMovie.Description)"/>
+						</div>
+
+						<div class="mb-3">
+							<label for="price" class="form-label">Price:</label>
+							<InputNumber class="form-control" id="price" @bind-Value="@EditedMovie.Price"
+							             autocomplete="price"
+							             placeholder="Enter the price"></InputNumber>
+							<ValidationMessage For="@(() => EditedMovie.Price)"/>
+						</div>
+
+						<div class="mb-3">
+							<label for="genre" class="form-label">Genre:</label>
+							<InputSelect class="form-control" id="genre" @bind-Value="@EditedMovie.GenreId">
+								@foreach (var genre in Genres)
+								{
+									<option value="@genre.Id">@genre.Name</option>
+								}
+							</InputSelect>
+							<ValidationMessage For="@(() => EditedMovie.GenreId)"/>
+						</div>
+
+						<div class="mb-3">
+							<label for="release-year" class="form-label ">Release year:</label>
+							<InputDate class="form-control" id="release-year" @bind-Value="@EditedMovie.ReleaseYear"
+							           placeholder="Enter the release year of the movie"></InputDate>
+							<ValidationMessage For="@(() => EditedMovie.ReleaseYear)"/>
+						</div>
+
+						<div class="mb-3">
+							<label for="total-copies" class="form-label ">Total Copies:</label>
+							<InputNumber class="form-control" id="total-copies" @bind-Value="@EditedMovie.TotalCopies"
+							             placeholder="Enter the number of movie copies"></InputNumber>
+							<ValidationMessage For="@(() => EditedMovie.TotalCopies)"/>
+						</div>
+
+						<div class="mb-3">
+							<label for="available-copies" class="form-label ">Available Copies:</label>
+							<InputNumber class="form-control" id="available-copies" @bind-Value="@EditedMovie.AvailableCopies"
+							             placeholder="Enter the number of movie copies"></InputNumber>
+							<ValidationMessage For="@(() => EditedMovie.AvailableCopies)"/>
+						</div>
+
+						@if (ErrorMessage is not null)
+						{
+							<div class="alert alert-danger" role="alert">
+								@ErrorMessage
+							</div>
+						}
+
+						<button type="submit" class="btn btn-primary">Edit Movie</button>
+					</EditForm>
+				}
 			</Authorized>
 			<NotAuthorized>
 				<h1>Access denied!</h1>
@@ -22,5 +107,28 @@
 
 
 @code {
+	[Parameter] public int Id { get; set; }
+	List<GenreModel>? Genres { get; set; } = new();
+	EditMovieDto? EditedMovie { get; set; } = new();
+	string? ErrorMessage { get; set; }
 
+	protected override async Task OnInitializedAsync()
+	{
+		EditedMovie = await MovieService.GetMovieByIdAsync(Http, Id);
+		Genres = await GenreService.GetGenresAsync(Http);
+	}
+
+	private async Task HandleValidSubmitAsync()
+	{
+		ErrorMessage = null;
+		var editedMovie = await MovieService.EditMovieAsync(Http, EditedMovie.Id ,EditedMovie);
+		if (editedMovie)
+		{
+			NavigationManager.NavigateTo("/movies");
+		}
+		else
+		{
+			ErrorMessage = "An error occurred while editing the movie.";
+		}
+	}
 }

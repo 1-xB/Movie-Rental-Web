@@ -69,6 +69,7 @@ public static class MovieEndpoints {
 				movie.ReleaseYear = newMovie.ReleaseYear;
 				movie.TotalCopies = newMovie.TotalCopies;
 				movie.AvailableCopies = newMovie.TotalCopies;
+				movie.Price = newMovie.Price;
 
 				await context.SaveChangesAsync();
 
@@ -118,6 +119,7 @@ public static class MovieEndpoints {
 				}
 
 				genre.Name = newGenre.Name;
+
 
 				await context.SaveChangesAsync();
 
