@@ -114,7 +114,7 @@
     {
         ErrorMessage = null;
         NewMovie.AvailableCopies = NewMovie.TotalCopies;
-        var newMovieCreated = await MovieService.TaskAddMovieAsync(Http, NewMovie);
+        var newMovieCreated = await MovieService.AddMovieAsync(Http, NewMovie);
 
         if (newMovieCreated)
         {

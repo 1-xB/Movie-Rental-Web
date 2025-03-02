@@ -2,13 +2,14 @@
 @using MovieRental.Frontend.Models
 @using MovieRental.Frontend.Components.Pages.LayoutsPages
 @inject GenreService GenreService
+@inject MovieService MovieService
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
 <CascadingAuthenticationState>
     <PageTitle>
-        @if (SearchedMovieModel is null) 
+        @if (SearchedMovieModel is null)
         {
             <text>This movie is not available on our website!</text>
         }
@@ -44,10 +45,10 @@
                     <p class="card-text"><strong>Release year:</strong> @SearchedMovieModel.ReleaseYear</p>
                 </div>
                 <div class="card-body">
-                    
+
                     <h4 class="card-title">Description</h4>
                     <p class="card-text">@SearchedMovieModel.Description</p>
-                    
+
                     <p class="card-text"><strong>Available copies:</strong> @SearchedMovieModel.AvailableCopies</p>
                     <p class="card-text"><strong>Price per day:</strong> @SearchedMovieModel.Price $</p>
                     <div class="d-flex justify-content-center">
@@ -80,24 +81,31 @@
 
     private void GoBack()
     {
-        navigationManager.NavigateTo("/movies");   
+        navigationManager.NavigateTo("/movies");
     }
 
     private void RentMovie()
     {
         navigationManager.NavigateTo("/checkout/" + SearchedMovieModel.Id);
     }
-    
-    
-    
+
+
+
     private void NavigateToEditMovie()
     {
         navigationManager.NavigateTo("admin-panel/edit-movie");
     }
 
-    private void DeleteMovie()
+    private async Task DeleteMovie()
     {
-        navigationManager.NavigateTo("admin-panel/delete-movie");
+      if (SearchedMovieModel != null)
+      {
+        var success = await MovieService.DeleteMovieAsync(Http, SearchedMovieModel.Id);
+        if (success)
+        {
+          navigationManager.NavigateTo("/movies");
+        }
+      }
     }
 
 }

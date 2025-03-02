@@ -100,10 +100,14 @@ public class CustomAuthenticationStateProvider(
     public async Task<bool> RefreshTokens()
     {
         var refreshToken = await protectedLocalStorage.GetAsync<string>("refreshToken");
-        if (string.IsNullOrEmpty(refreshToken.Value)) return false;
+        if (string.IsNullOrEmpty(refreshToken.Value)) {
+          return false;
+        }
 
         var accessToken = await protectedLocalStorage.GetAsync<string>("accessToken");
-        if (string.IsNullOrEmpty(accessToken.Value)) return false;
+        if (string.IsNullOrEmpty(accessToken.Value)) {
+          return false;
+        }
 
         var request = new HttpRequestMessage(HttpMethod.Post, "api/auth/refresh-tokens")
         {
@@ -115,7 +119,10 @@ public class CustomAuthenticationStateProvider(
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var tokenResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
-            if (tokenResponse is null) return false;
+            if (tokenResponse is null) {
+              return false;
+            }
+
             await protectedLocalStorage.SetAsync("accessToken", tokenResponse.AccessToken);
             await protectedLocalStorage.SetAsync("refreshToken", tokenResponse.RefreshToken);
             return true;
@@ -155,6 +162,6 @@ public class CustomAuthenticationStateProvider(
         }
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
     }
-    
+
     public string? GetUserRole() => _currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 }
