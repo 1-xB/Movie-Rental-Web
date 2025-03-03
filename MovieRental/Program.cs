@@ -4,22 +4,23 @@ using System.Text;
 using Data;
 using Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Scalar.AspNetCore;
 using Services;
 
 public class Program {
 	public static async Task Main(string[] args) {
 		var builder = WebApplication.CreateBuilder(args);
 
-		builder.Services.AddOpenApi();
-		builder.Services.AddEndpointsApiExplorer();
-		builder.Services.AddSwaggerGen(c => {
-			c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieRental API", Version = "v1" });
-		});
+		//builder.Services.AddOpenApi();
+		//builder.Services.AddEndpointsApiExplorer();
+		//builder.Services.AddSwaggerGen(c => {
+		//	c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieRental API", Version = "v1" });
+		//});
 
-		builder.Services.AddSqlite<DatabaseContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
+		builder.Services.AddDbContext<DatabaseContext>(options =>
+			options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 		builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
 			options.TokenValidationParameters = new TokenValidationParameters {
@@ -46,14 +47,14 @@ public class Program {
 		app.MapRentalRoutes();
 
 		// Użyj OpenAPI
-		if (app.Environment.IsDevelopment()) {
-			app.UseSwagger();
-			app.UseSwaggerUI(c => {
-				c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRental API v1");
-			});
-			app.MapOpenApi();
-			app.MapScalarApiReference();
-		}
+		//if (app.Environment.IsDevelopment()) {
+		//	app.UseSwagger();
+		//	app.UseSwaggerUI(c => {
+		//		c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRental API v1");
+		//	});
+		//	app.MapOpenApi();
+		//	app.MapScalarApiReference();
+		//}
 
 		await app.MigrateDbAsync();
 

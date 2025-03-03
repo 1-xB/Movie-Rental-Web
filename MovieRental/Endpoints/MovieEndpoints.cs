@@ -1,4 +1,4 @@
-﻿namespace MovieRental.Endpoints;
+namespace MovieRental.Endpoints;
 
 using Data;
 using Dtos;
