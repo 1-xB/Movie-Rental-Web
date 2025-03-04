@@ -60,7 +60,12 @@
 							           class="form-control"
 							           disabled>
 							</InputText>
+							@if (!string.IsNullOrEmpty(ErrorMessage))
+							{
+								<div class="alert alert-danger">@ErrorMessage</div>
+							}
 						</div>
+
 						<button type="submit" class="btn btn-primary" aria-label="Rent">Rent</button>
 					</EditForm>
 				</Authorized>
@@ -131,7 +136,7 @@
 		ErrorMessage = string.Empty;
 
 		// INFO
-		// There should be payment logic here, but it's not a real store. 
+		// There should be payment logic here, but it's not a real store.
 		// So we just confirm the rental.
 		Rent.MovieId = Id;
 		Rent.TotalPrice = Price;
@@ -151,11 +156,10 @@
 		if (response.IsSuccessStatusCode)
 		{
 			NavigationManager.NavigateTo("/profile");
+			return;
 		}
-		else
-		{
-			ErrorMessage = "An error occurred while renting the movie. Please try again later!";
-		}
+		var errorMessage = await response.Content.ReadAsStringAsync();
+		ErrorMessage = errorMessage;
 	}
 
 	private void OnDateChanged(ChangeEventArgs e)

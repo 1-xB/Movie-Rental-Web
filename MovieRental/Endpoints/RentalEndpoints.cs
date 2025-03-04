@@ -14,13 +14,20 @@ public static class RentalEndpoints {
 			async (HttpContext httpContext, IRentalService rentalService, RentMovieDto request,
 				IAuthService authService) => {
 				var accessToken = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-				if (!authService.IsAccessTokenValid(accessToken)) {
+				var username = httpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+				if (!authService.IsAccessTokenValid(accessToken) || username == null) {
 					return Results.Unauthorized();
 				}
 
 				var id = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 				if (string.IsNullOrWhiteSpace(id)) {
 					return Results.Unauthorized();
+				}
+
+				var rentalsList = await rentalService.GetRentalsByUsername(username);
+				rentalsList = rentalsList?.Where(r => r.Returned == false).ToList();
+				if (rentalsList != null && rentalsList.Count >= 5) {
+					return Results.BadRequest("You have reached the maximum number of rentals!");
 				}
 
 				var rental = await rentalService.RentMovie(request, id);
@@ -39,7 +46,7 @@ public static class RentalEndpoints {
 					return Results.Unauthorized();
 				}
 
-				List<Rentals>? rentals = await rentalService.GetRentalsByUsername(username);
+				var rentals = await rentalService.GetRentalsByUsername(username);
 				if (rentals != null && rentals.Count <= 0) {
 					return Results.NoContent();
 				}
