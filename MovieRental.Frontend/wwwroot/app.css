@@ -134,18 +134,21 @@ li {
 
 /* Responsywność */
 @media (max-width: 768px) {
-	/* TODO : NAPRAWIC PRZYCISKI NAWIGACJI, na telefonie sie nie wyswietlają */
 	.navbar-collapse {
 		text-align: center;
 	}
 
 	.navbar-nav {
 		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.navbar-nav .nav-item {
 		width: 100%;
 		margin: 5px 0;
+		text-align: center;
 	}
 }
 
