@@ -15,6 +15,11 @@
 
 	<main>
 		<h1>Login</h1>
+		<div class="@LoadingOverlayClass">
+						<div class="spinner-border text-light" role="status">
+							<span class="sr-only"></span>
+						</div>
+					</div>
 		<AuthorizeView>
 			<Authorized>
 				<p>You are already logged in. If you want to login with another account, please logout first.</p>
@@ -59,15 +64,28 @@
 @code {
 	private LoginModel LoginModel { get; } = new();
 	private string? ServerMessage { get; set; }
+	private string LoadingOverlayClass = "loading-overlay";
+
+    private void ShowOverlay()
+    {
+        LoadingOverlayClass = "loading-overlay show";
+    }
+
+    private void HideOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay";
+	}
 
 	private async Task HandleSubmitAsync()
 	{
+		ShowOverlay();
 		var user = new LoginUserDto
 		{
 			UsernameOrMail = LoginModel.Username,
 			Password = LoginModel.Password
 		};
 		ServerMessage = await UserService.LoginUserAsync(user);
+		HideOverlay();
 	}
 
 }

@@ -16,6 +16,11 @@
 	</nav>
 	<main class="container mt-4">
 		<h1>Checkout</h1>
+		<div class="@LoadingOverlayClass">
+			<div class="spinner-border text-light" role="status">
+				<span class="sr-only"></span>
+			</div>
+		</div>
 		@if (Movie is not null && Genres is not null)
 		{
 			<div class="card shadow-sm mb-4">
@@ -74,10 +79,6 @@
 				</NotAuthorized>
 			</AuthorizeView>
 		}
-		else
-		{
-			<h1>Loading...</h1>
-		}
 	</main>
 </CascadingAuthenticationState>
 
@@ -95,7 +96,17 @@
 	private DateTime MaxDate { get; set; }
 	private DateTime MinDate { get; set; }
 	private decimal Price { get; set; }
+	private string LoadingOverlayClass = "loading-overlay";
 
+	private void ShowOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay show";
+	}
+
+	private void HideOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay";
+	}
 	private string PriceString
 	{
 		get => Price.ToString(CultureInfo.InvariantCulture);
@@ -104,6 +115,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		ShowOverlay();
 		MaxDate = DateTime.UtcNow.AddDays(30);
 		MinDate = DateTime.UtcNow.AddDays(1);
 
@@ -115,10 +127,12 @@
 
 		if (Movie != null) Price = (decimal)Movie.Price;
 		Genres = await GenreService.GetGenresAsync(Http);
+		HideOverlay();
 	}
 
 	private async Task OnValidRent()
 	{
+		ShowOverlay();
 		if (Rent.ReturnDate < DateOnly.FromDateTime(DateTime.UtcNow))
 		{
 			Rent.ReturnDate = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -156,10 +170,14 @@
 		if (response.IsSuccessStatusCode)
 		{
 			NavigationManager.NavigateTo("/profile");
-			return;
 		}
-		var errorMessage = await response.Content.ReadAsStringAsync();
-		ErrorMessage = errorMessage;
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			ErrorMessage = errorMessage;
+		}
+		HideOverlay();
+
 	}
 
 	private void OnDateChanged(ChangeEventArgs e)

@@ -18,11 +18,12 @@
 		<AuthorizeView>
 			<Authorized>
 				<h1>Welcome, @context.User.Identity?.Name!</h1>
-				@if (!_dataReceived || _genres is null || _movies is null)
-				{
-					<h1>Loading...</h1>
-				}
-				else if (_rentedMovies is null || _rentedMovies.Count == 0)
+				<div class="@LoadingOverlayClass">
+					<div class="spinner-border text-light" role="status">
+						<span class="sr-only"></span>
+					</div>
+				</div>
+				@if (_rentedMovies is null || _rentedMovies.Count == 0)
 				{
 					<h1>You haven't rented anything!</h1>
 				}
@@ -100,11 +101,24 @@
 	private List<MovieModel>? _movies;
 	private bool _dataReceived;
 	private bool _initialized;
+	private string LoadingOverlayClass = "loading-overlay";
+
+	private void ShowOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay show";
+	}
+
+	private void HideOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay";
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
+		ShowOverlay();
 		_genres = await GenreService.GetGenresAsync(Http);
 		_movies = await Http.GetFromJsonAsync<List<MovieModel>>("api/movie");
+		HideOverlay();
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -120,12 +134,14 @@
 	{
 		if (!string.IsNullOrEmpty(accessToken.Value))
 		{
+			ShowOverlay();
 			ResetData();
 			var request = new HttpRequestMessage(HttpMethod.Get, "api/rental/rent-movie");
 			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Value);
 
 			var response = await Http.SendAsync(request);
 			await HandleRentalMoviesResponse(response);
+			HideOverlay();
 		}
 	}
 
@@ -159,9 +175,11 @@
 
 	private async Task ReturnMovie(int movieId)
 	{
+
 		var accessToken = await LocalStorage.GetAsync<string>("accessToken");
 		if (!string.IsNullOrEmpty(accessToken.Value))
 		{
+			ShowOverlay();
 			if (!await Provider.IsTokenValid(accessToken.Value))
 			{
 				await Provider.RefreshTokens();
@@ -181,6 +199,7 @@
 				await Provider.MarkUserAsLoggedOut();
 				NavigationManager.NavigateTo("/login");
 			}
+			HideOverlay();
 		}
 	}
 

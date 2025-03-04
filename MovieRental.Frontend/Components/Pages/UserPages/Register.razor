@@ -21,6 +21,12 @@
 				<p>You are already logged in. If you want to login with another account, please logout first.</p>
 			</Authorized>
 			<NotAuthorized>
+				<h1>Checkout</h1>
+				<div class="@LoadingOverlayClass">
+					<div class="spinner-border text-light" role="status">
+						<span class="sr-only"></span>
+					</div>
+				</div>
 				<EditForm FormName="RegisterForm" Model="@RegisterModel" OnValidSubmit="HandleSubmitAsync"
 				          Context="editContext" Enhance>
 					<DataAnnotationsValidator/>
@@ -78,9 +84,21 @@
 @code {
 	public RegisterModel? RegisterModel { get; set; } = new();
 	private string? ServerMessage { get; set; }
+	private string LoadingOverlayClass = "loading-overlay";
+
+	private void ShowOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay show";
+	}
+
+	private void HideOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay";
+	}
 
 	private async Task HandleSubmitAsync()
 	{
+		ShowOverlay();
 		try
 		{
 			var user = new RegisterUserDto
@@ -95,6 +113,7 @@
 		{
 			ServerMessage = $"An error occurred : {ex.Message}";
 		}
+	HideOverlay();
 	}
 
 }

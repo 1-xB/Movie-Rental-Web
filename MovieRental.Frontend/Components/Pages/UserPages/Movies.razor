@@ -16,6 +16,11 @@
 	</nav>
 	<main class="container mt-4">
 		<h3>Movies</h3>
+		<div class="@LoadingOverlayClass">
+			<div class="spinner-border text-light" role="status">
+				<span class="sr-only"></span>
+			</div>
+		</div>
 
 		<div class="container">
 			<div class="search-bar">
@@ -59,10 +64,6 @@
 					</div>
 				}
 			}
-			else
-			{
-				<p>Loading...</p>
-			}
 		</div>
 	</main>
 </CascadingAuthenticationState>
@@ -71,11 +72,24 @@
 	private List<MovieModel>? _movies;
 	private List<GenreModel>? _genres;
 	private string? _searchText = string.Empty;
+	private string LoadingOverlayClass = "loading-overlay";
+
+	private void ShowOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay show";
+	}
+
+	private void HideOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay";
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
+		ShowOverlay();
 		_movies = await Http.GetFromJsonAsync<List<MovieModel>>("api/movie");
 		_genres = await GenreService.GetGenresAsync(Http);
+		HideOverlay();
 	}
 
 	private void MovieClicked(string title)
