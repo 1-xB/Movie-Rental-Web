@@ -14,7 +14,6 @@ public class CustomAuthenticationStateProvider(
 	NavigationManager navigationManager,
 	HttpClient http) : AuthenticationStateProvider {
 	private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
-
 	public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
 		await InitializeAsync();
 		return new AuthenticationState(_currentUser);

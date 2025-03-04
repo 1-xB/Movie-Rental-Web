@@ -16,17 +16,19 @@
 
 	<main>
 		<h1>Register</h1>
-		<AuthorizeView>
-			<Authorized>
+		<div class="@LoadingOverlayClass">
+			<div class="spinner-border text-light" role="status">
+				<span class="sr-only"></span>
+			</div>
+		</div>
+		<AuthorizeView Context="authenticationState">
+			@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
+			{
 				<p>You are already logged in. If you want to login with another account, please logout first.</p>
-			</Authorized>
-			<NotAuthorized>
+			}
+			else
+			{
 				<h1>Checkout</h1>
-				<div class="@LoadingOverlayClass">
-					<div class="spinner-border text-light" role="status">
-						<span class="sr-only"></span>
-					</div>
-				</div>
 				<EditForm FormName="RegisterForm" Model="@RegisterModel" OnValidSubmit="HandleSubmitAsync"
 				          Context="editContext" Enhance>
 					<DataAnnotationsValidator/>
@@ -74,7 +76,8 @@
 					<button type="submit" class="btn btn-primary" aria-label="Register">Register</button>
 
 				</EditForm>
-			</NotAuthorized>
+			}
+
 		</AuthorizeView>
 	</main>
 

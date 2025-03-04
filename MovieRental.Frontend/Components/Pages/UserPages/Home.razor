@@ -12,13 +12,15 @@
 	</nav>
 
 	<main>
-		<AuthorizeView>
-			<Authorized>
-				<h1>Welcome, @context.User.Identity?.Name!</h1>
-			</Authorized>
-			<NotAuthorized>
-				<h1>Welcome!</h1>
-			</NotAuthorized>
+		<AuthorizeView Context="authenticationState">
+			@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
+			{
+				<h1>Welcome, @authenticationState.User.Identity?.Name!</h1>
+			}
+			else
+			{
+				<h1>Welcome to Movie Rental!</h1>
+			}
 		</AuthorizeView>
 
 		<p>
@@ -26,17 +28,19 @@
 			other movies.
 		</p>
 
-		<AuthorizeView>
-			<Authorized>
+		<AuthorizeView Context="authenticationState">
+			@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
+			{
 				<p>
 					<a href="/profile">See your favorite movies</a>
 				</p>
-			</Authorized>
-			<NotAuthorized>
+			}
+			else
+			{
 				<p>
 					<a href="“/register”">register</a> or <a href="“/login”">login</a> to start using the application.
 				</p>
-			</NotAuthorized>
+			}
 		</AuthorizeView>
 
 	</main>

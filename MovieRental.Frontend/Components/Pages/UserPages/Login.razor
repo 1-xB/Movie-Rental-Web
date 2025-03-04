@@ -20,11 +20,14 @@
 							<span class="sr-only"></span>
 						</div>
 					</div>
-		<AuthorizeView>
-			<Authorized>
+		<AuthorizeView Context="authenticationState">
+			@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
+			{
 				<p>You are already logged in. If you want to login with another account, please logout first.</p>
-			</Authorized>
-			<NotAuthorized>
+			}
+			else
+			{
+				<h1>Checkout</h1>
 				<EditForm FormName="LoginForm" Model="@LoginModel" OnValidSubmit="HandleSubmitAsync"
 				          Context="editContext" Enhance>
 					<DataAnnotationsValidator/>
@@ -54,7 +57,7 @@
 					<button type="submit" class="btn btn-primary" aria-label="Login">Login</button>
 
 				</EditForm>
-			</NotAuthorized>
+			}
 		</AuthorizeView>
 	</main>
 

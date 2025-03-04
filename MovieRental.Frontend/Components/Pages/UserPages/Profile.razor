@@ -15,20 +15,25 @@
 		<NavMenu></NavMenu>
 	</nav>
 	<main class="container mt-4">
-		<AuthorizeView>
-			<Authorized>
-				<h1>Welcome, @context.User.Identity?.Name!</h1>
-				<div class="@LoadingOverlayClass">
-					<div class="spinner-border text-light" role="status">
-						<span class="sr-only"></span>
-					</div>
-				</div>
-				@if (_rentedMovies is null || _rentedMovies.Count == 0)
+		<div class="@LoadingOverlayClass">
+			<div class="spinner-border text-light" role="status">
+			<span class="sr-only"></span>
+			</div>
+		</div>
+		<AuthorizeView Context="authenticationState">
+			@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
+			{
+				<h1>Welcome, @authenticationState.User.Identity?.Name!</h1>
+				@if (_rentedMoviesReceived && (_rentedMovies is null || _rentedMovies.Count == 0))
 				{
 					<h1>You haven't rented anything!</h1>
 				}
 				else
 				{
+					if (_rentedMovies is null)
+					{
+						_rentedMovies = new List<RentalModel>();
+					}
 					var rentedMovies = _rentedMovies.Where(m => !m.Returned).ToList();
 					@if (rentedMovies.Count > 0)
 					{
@@ -85,10 +90,7 @@
 						}
 					}
 				}
-			</Authorized>
-			<NotAuthorized>
-				<h1>To view your profile you must first log in!</h1>
-			</NotAuthorized>
+			}
 		</AuthorizeView>
 
 	</main>
@@ -101,16 +103,19 @@
 	private List<MovieModel>? _movies;
 	private bool _dataReceived;
 	private bool _initialized;
+	private bool _rentedMoviesReceived;
 	private string LoadingOverlayClass = "loading-overlay";
-
-	private void ShowOverlay()
-	{
-		LoadingOverlayClass = "loading-overlay show";
-	}
 
 	private void HideOverlay()
 	{
 		LoadingOverlayClass = "loading-overlay";
+		StateHasChanged();
+	}
+
+	private void ShowOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay show";
+		StateHasChanged();
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -141,6 +146,7 @@
 
 			var response = await Http.SendAsync(request);
 			await HandleRentalMoviesResponse(response);
+			_rentedMoviesReceived = true;
 			HideOverlay();
 		}
 	}
@@ -163,8 +169,10 @@
 
 		_dataReceived = true;
 		_initialized = true;
+		HideOverlay();
 		StateHasChanged();
 	}
+
 
 	private void ResetData()
 	{
@@ -175,7 +183,6 @@
 
 	private async Task ReturnMovie(int movieId)
 	{
-
 		var accessToken = await LocalStorage.GetAsync<string>("accessToken");
 		if (!string.IsNullOrEmpty(accessToken.Value))
 		{
@@ -199,6 +206,7 @@
 				await Provider.MarkUserAsLoggedOut();
 				NavigationManager.NavigateTo("/login");
 			}
+
 			HideOverlay();
 		}
 	}
