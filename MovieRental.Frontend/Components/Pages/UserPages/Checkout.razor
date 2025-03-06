@@ -37,10 +37,9 @@
 
 			<h2>Rent</h2>
 			<AuthorizeView Context="authenticationState">
-				@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
-				{
+				<Authorized>
 					<EditForm FormName="RentForm" Model="Rent" OnValidSubmit="OnValidRent" class="bg-light p-3"
-					          Context="editContext" Enhance>
+					           Enhance>
 						<DataAnnotationsValidator/>
 						<ValidationSummary/>
 
@@ -74,11 +73,10 @@
 
 						<button type="submit" class="btn btn-primary" aria-label="Rent">Rent</button>
 					</EditForm>
-				}
-				else
-				{
+				</Authorized>
+				<NotAuthorized>
 					<p>If you want to rent a movie, <a href="/login">log in</a> first!</p>
-				}
+				</NotAuthorized>
 			</AuthorizeView>
 		}
 	</main>

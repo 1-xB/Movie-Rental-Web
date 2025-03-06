@@ -12,36 +12,31 @@
 	</nav>
 
 	<main>
-		<AuthorizeView Context="authenticationState">
-			@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
-			{
-				<h1>Welcome, @authenticationState.User.Identity?.Name!</h1>
-			}
-			else
-			{
-				<h1>Welcome to Movie Rental!</h1>
-			}
-		</AuthorizeView>
-
-		<p>
-			Movie Rental is a movie rental application. You can find the latest premieres, cinema classics and many
-			other movies.
-		</p>
-
-		<AuthorizeView Context="authenticationState">
-			@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
-			{
+		<AuthorizeView Context="context">
+			<Authorized>
+				<h1>Welcome, @context.User.Identity?.Name!</h1>
+				<p>
+					Movie Rental is a movie rental application. You can find the latest premieres, cinema classics and many
+					other movies.
+				</p>
 				<p>
 					<a href="/profile">See your favorite movies</a>
 				</p>
-			}
-			else
-			{
+			</Authorized>
+			<NotAuthorized>
+				<h1>Welcome to Movie Rental!</h1>
 				<p>
-					<a href="“/register”">register</a> or <a href="“/login”">login</a> to start using the application.
+					Movie Rental is a movie rental application. You can find the latest premieres, cinema classics and many
+					other movies.
 				</p>
-			}
+				<p>
+					<a href="/register">register</a> or <a href="/login">login</a> to start using the application.
+				</p>
+			</NotAuthorized>
 		</AuthorizeView>
+
+
+
 
 	</main>
 </CascadingAuthenticationState>

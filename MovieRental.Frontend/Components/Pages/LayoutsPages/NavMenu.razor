@@ -21,30 +21,30 @@
 		</ul>
 		<ul class="navbar-nav ml-auto">
 			<AuthorizeView Context="authenticationState">
-				@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
-				{
-				@if (authenticationState.User.IsInRole("Admin"))
-				{
-				<li class="nav-item">
-					<a class="nav-link" href="/admin-panel">Admin Panel</a>
-				</li>
-				}
-				<li class="nav-item">
-					<a class="nav-link" href="/profile">@authenticationState.User.Identity?.Name</a>
-                    </li>
-                    <li class="nav-item">
-					<a class="nav-link" @onclick="Logout">Logout</a>
-				</li>
-				}
-				else
-				{
-				<li class="nav-item">
-					<a class="nav-link" href="/login">Login</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/register">Register</a>
-				</li>
-				}
+				<Authorized>
+					<CascadingValue Value="authenticationState.User">
+						@if (authenticationState.User.IsInRole("Admin"))
+						{
+							<li class="nav-item">
+								<a class="nav-link" href="/admin-panel">Admin Panel</a>
+							</li>
+						}
+						<li class="nav-item">
+							<a class="nav-link" href="/profile">@authenticationState.User.Identity?.Name</a>
+						</li>
+						<li class="nav-item">
+							<button class="nav-link btn btn-link" @onclick="Logout">Logout</button>
+						</li>
+					</CascadingValue>
+				</Authorized>
+				<NotAuthorized>
+					<li class="nav-item">
+						<a class="nav-link" href="/login">Login</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/register">Register</a>
+					</li>
+				</NotAuthorized>
 			</AuthorizeView>
 		</ul>
 	</div>

@@ -20,10 +20,9 @@
 			<span class="sr-only"></span>
 			</div>
 		</div>
-		<AuthorizeView Context="authenticationState">
-			@if (authenticationState.User.Identity?.IsAuthenticated ?? false)
-			{
-				<h1>Welcome, @authenticationState.User.Identity?.Name!</h1>
+		<AuthorizeView Context="authenticationContext">
+			<Authorized>
+				<h1>Welcome, @authenticationContext.User.Identity?.Name!</h1>
 				@if (_rentedMoviesReceived && (_rentedMovies is null || _rentedMovies.Count == 0))
 				{
 					<h1>You haven't rented anything!</h1>
@@ -90,7 +89,10 @@
 						}
 					}
 				}
-			}
+			</Authorized>
+			<NotAuthorized>
+				<p>You are not logged in. If you want to see your profile, <a href="/login">log in</a> first!</p>
+			</NotAuthorized>
 		</AuthorizeView>
 
 	</main>
