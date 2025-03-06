@@ -1,0 +1,65 @@
+﻿@page "/genres"
+@using MovieRental.Frontend.Components.Pages.LayoutsPages
+@using MovieRental.Frontend.Models
+@rendermode InteractiveServer
+@inject HttpClient http
+@inject NavigationManager NavigationManager
+@inject GenreService GenreService
+
+
+<PageTitle>Movies</PageTitle>
+<CascadingAuthenticationState>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
+	<main class="container mt-4">
+		<h3>Genres</h3>
+		<div class="@LoadingOverlayClass">
+			<div class="spinner-border text-light" role="status">
+				<span class="sr-only"></span>
+			</div>
+		</div>
+
+			<div class="row">
+				@foreach(var genre in _genres)
+				{
+					<div class="col-md-4 mb-4 movie" @onclick="() => MovieClicked(genre.Name)">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">@genre.Name</h5>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+
+
+	</main>
+</CascadingAuthenticationState>
+
+@code {
+	List<GenreModel>? _genres { get; set; } = new();
+	private string LoadingOverlayClass = "loading-overlay";
+
+	private void ShowOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay show";
+	}
+
+	private void HideOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay";
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		ShowOverlay();
+		_genres = await GenreService.GetGenresAsync(http);
+		HideOverlay();
+	}
+
+	private async Task MovieClicked(string title)
+	{
+		NavigationManager.NavigateTo($"/genres/{title}");
+	}
+}

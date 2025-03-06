@@ -1,7 +1,10 @@
 ﻿@page "/admin-panel/add-genre"
 @using MovieRental.Frontend.Components.Pages.LayoutsPages
+@using MovieRental.Frontend.Dtos
 @rendermode InteractiveServer
-
+@inject GenreMethodsService GenreMethodsService
+@inject HttpClient http
+@inject NavigationManager NavigationManager
 <CascadingAuthenticationState>
 	<nav>
 		<NavMenu></NavMenu>
@@ -10,6 +13,17 @@
 		<AuthorizeView Policy="AdminOnly">
 			<Authorized>
 				<h1>Add Genre</h1>
+				<EditForm Model="NewGenre" OnValidSubmit="OnValidSubmit" Context="editContext" Enhance>
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+					<div class="mb-3">
+						<label for="name" class="form-label">Name: </label>
+						<InputText id="name" class="form-control" @bind-Value="NewGenre.Name" />
+						<ValidationMessage For="@(() => NewGenre.Name)" />
+					</div>
+
+					<button type="submit" class="btn btn-primary">Add Genre</button>
+				</EditForm>
 			</Authorized>
 			<NotAuthorized>
 				<h1>Access denied!</h1>
@@ -19,8 +33,24 @@
 	</main>
 </CascadingAuthenticationState>
 
-
-
 @code {
+	public AddGenreDto NewGenre { get; set; } = new AddGenreDto()
+	{
+		Name = string.Empty
+	};
+	public string? ErrorMessage { get; set; }
 
+	private async Task OnValidSubmit()
+	{
+		var message = await GenreMethodsService.AddGenreAsync(http, NewGenre);
+		if (message == "Genre added successfully")
+		{
+			ErrorMessage = string.Empty;
+			NavigationManager.NavigateTo("/admin-panel/");
+		}
+		else
+		{
+			ErrorMessage = message;
+		}
+	}
 }

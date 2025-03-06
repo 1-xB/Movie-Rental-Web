@@ -1,5 +1,8 @@
 ﻿namespace MovieRental.Frontend.Services;
 
+using System.Net.Http.Headers;
+using Dtos;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Models;
 
 public class GenreService {

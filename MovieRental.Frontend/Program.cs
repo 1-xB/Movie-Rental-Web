@@ -15,10 +15,10 @@ public class Program {
 		builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://movierentalbackend.azurewebsites.net") });
 		builder.Services.AddScoped<UserService>();
 		builder.Services.AddScoped<MovieService>();
-
 		builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 		builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 		builder.Services.AddSingleton<GenreService>();
+		builder.Services.AddScoped<GenreMethodsService>();
 
 		builder.Services.AddAuthorizationCore(options => {
 			options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));

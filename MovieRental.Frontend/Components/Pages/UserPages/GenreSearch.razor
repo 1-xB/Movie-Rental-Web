@@ -1,0 +1,106 @@
+﻿@page "/genres/{title}"
+@using MovieRental.Frontend.Models
+@using MovieRental.Frontend.Components.Pages.LayoutsPages
+@rendermode InteractiveServer
+@inject HttpClient http
+@inject NavigationManager NavigationManager
+@inject GenreService GenreService
+
+
+<PageTitle>@Title</PageTitle>
+
+<CascadingAuthenticationState>
+	<nav>
+		<NavMenu></NavMenu>
+	</nav>
+	<main class="container mt-4">
+		<div class="@LoadingOverlayClass">
+			<div class="spinner-border text-light" role="status">
+				<span class="sr-only"></span>
+			</div>
+		</div>
+		@if (_dataLoaded && (_movies is null || _genres?.FirstOrDefault(g => g.Name == Title) is null))
+		{
+			<div class="alert alert-warning" role="alert">
+				This genre is not available on our website!
+			</div>
+		}
+		else
+		{
+			<h3>Movies in genre : @Title</h3>
+			var moviesList = _movies.Where(m => m.GenreId == _genres.FirstOrDefault(g => g.Name == Title).Id).ToList();
+			@if (moviesList.Count == 0)
+			{
+				<div class="alert alert-warning" role="alert">
+					No movies available
+				</div>
+			}
+			else
+			{
+				<div class="row">
+					@foreach (var movie in moviesList)
+					{
+						<div class="col-md-4 mb-4 movie" @onclick="() => MovieClicked(movie.Title)">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">@movie.Title - @movie.ReleaseYear</h5>
+									<p class="card-text">
+										@if (movie.Description.Length >= 60)
+										{
+											@movie.Description.Substring(0, 60)
+										}
+										else
+										{
+											@movie.Description
+										}
+										...
+									</p>
+									<p class="card-text">
+										Genre: @_genres.Where(g => g.Id == movie.GenreId).Select(g => g.Name).FirstOrDefault()</p>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+
+			}
+		}
+
+
+	</main>
+</CascadingAuthenticationState>
+
+@code {
+
+	[Parameter]
+	public string Title { get; set; }
+	private string LoadingOverlayClass = "loading-overlay";
+	List<GenreModel>? _genres { get; set; } = new();
+	List<MovieModel>? _movies { get; set; } = new();
+	bool _dataLoaded = false;
+
+	private void ShowOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay show";
+	}
+
+	private void HideOverlay()
+	{
+		LoadingOverlayClass = "loading-overlay";
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		ShowOverlay();
+		_movies = await http.GetFromJsonAsync<List<MovieModel>>("api/movie");
+		_genres = await GenreService.GetGenresAsync(http);
+		_dataLoaded = true;
+		HideOverlay();
+	}
+
+	private void MovieClicked(string title)
+	{
+		title = title.Replace(" ", "-");
+		NavigationManager.NavigateTo($"movies/{title}");
+	}
+}
