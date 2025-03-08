@@ -25,4 +25,7 @@ public class EditMovieDto {
 	public int TotalCopies { get; set; }
 
 	public int AvailableCopies { get; set; }
+	public string? ImageBase64 { get; set; }
+	public string? ImageType { get; set; }
+	public string? ImageName { get; set; }
 }

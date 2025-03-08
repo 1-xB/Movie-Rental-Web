@@ -141,7 +141,6 @@
 
         var response = await Http.SendAsync(request);
 
-        Console.WriteLine($"Response: {response.StatusCode}");
         if (response.StatusCode == HttpStatusCode.OK)
         {
             navigationManager.NavigateTo("/movies");

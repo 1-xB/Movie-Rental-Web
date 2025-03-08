@@ -47,7 +47,7 @@
 							<div class="card-body">
 								@if (!string.IsNullOrEmpty(movie.ImageUrl))
 								{
-									<img src="@($"{Http.BaseAddress}/{movie.ImageUrl}")" class="card-img-top mb-3" alt="Movie image">
+									<img src="@($"{Http.BaseAddress}/{movie.ImageUrl}")" class="card-img-top mb-3" alt="Movie image" width="600" height="200">
 								}
 								else
 								{

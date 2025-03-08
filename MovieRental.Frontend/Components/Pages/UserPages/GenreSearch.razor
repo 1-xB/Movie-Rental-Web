@@ -5,6 +5,7 @@
 @inject HttpClient http
 @inject NavigationManager NavigationManager
 @inject GenreService GenreService
+@inject HttpClient Http
 
 
 <PageTitle>@Title</PageTitle>
@@ -43,6 +44,14 @@
 						<div class="col-md-4 mb-4 movie" @onclick="() => MovieClicked(movie.Title)">
 							<div class="card">
 								<div class="card-body">
+									@if (!string.IsNullOrEmpty(movie.ImageUrl))
+									{
+										<img src="@($"{Http.BaseAddress}/{movie.ImageUrl}")" class="card-img-top mb-3" alt="Movie image" width="600" height="200">
+									}
+									else
+									{
+										<img src="https://placehold.co/600x400" class="card-img-top mb-3" alt="Placeholder image">
+									}
 									<h5 class="card-title">@movie.Title - @movie.ReleaseYear</h5>
 									<p class="card-text">
 										@if (movie.Description.Length >= 60)

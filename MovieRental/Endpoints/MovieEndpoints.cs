@@ -102,28 +102,37 @@ public static class MovieEndpoints {
 				movie.AvailableCopies = newMovie.TotalCopies;
 				movie.Price = newMovie.Price;
 
-				if (newMovie.Image is not null && newMovie.Image.Length > 0) {
-					string uploadsFolder = Path.Combine(env.WebRootPath, "images"); // wwwroot/images
-					if (!Directory.Exists(uploadsFolder)) {
+				if (!string.IsNullOrEmpty(newMovie.ImageBase64))
+				{
+					string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+
+					if (!Directory.Exists(uploadsFolder))
+					{
 						Directory.CreateDirectory(uploadsFolder);
 					}
 
-					string fileName = Guid.NewGuid() + Path.GetExtension(newMovie.Image.FileName);
+					string fileName = Guid.NewGuid() + Path.GetExtension(newMovie.ImageName);
 					string filePath = Path.Combine(uploadsFolder, fileName);
+					string oldFilePath = Path.Combine(uploadsFolder, movie.ImageUrl.Replace("/images/", ""));
+					try
+					{
+						var base64Data = newMovie.ImageBase64.Split(',').Last();
+						byte[] imageBytes = Convert.FromBase64String(base64Data);
+						await File.WriteAllBytesAsync(filePath, imageBytes);
 
-					using (var fileStream = new FileStream(filePath, FileMode.Create)) {
-						await newMovie.Image.CopyToAsync(fileStream);
-					}
+						movie.ImageUrl = $"/images/{fileName}";
 
-					if (movie.ImageUrl != null) {
-						var oldImagePath = Path.Combine(env.WebRootPath, movie.ImageUrl.TrimStart('/'));
-						if (File.Exists(oldImagePath)) {
-							File.Delete(oldImagePath);
+						if (File.Exists(oldFilePath))
+						{
+							File.Delete(oldFilePath);
 						}
 					}
-
-					movie.ImageUrl = $"/images/{fileName}";
+					catch (Exception ex)
+					{
+						// ignore
+					}
 				}
+
 
 				await context.SaveChangesAsync();
 
@@ -135,6 +144,13 @@ public static class MovieEndpoints {
 				var movie = await context.Movies.FindAsync(id);
 				if (movie is null) {
 					return Results.BadRequest("Movie with this id does not exist");
+				}
+				string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+				string oldFilePath = Path.Combine(uploadsFolder, movie.ImageUrl.Replace("/images/", ""));
+
+				if (File.Exists(oldFilePath))
+				{
+					File.Delete(oldFilePath);
 				}
 
 				context.Movies.Remove(movie);
