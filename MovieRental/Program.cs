@@ -6,11 +6,25 @@ using Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Services;
 
 public class Program {
 	public static async Task Main(string[] args) {
 		var builder = WebApplication.CreateBuilder(args);
+
+
+
+		// Dodaj usługi Swaggera
+		builder.Services.AddEndpointsApiExplorer();
+		builder.Services.AddSwaggerGen(c => {
+			c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieRental API", Version = "v1" });
+		});
+		builder.Services.AddControllers(options =>
+		{
+			options.Filters.Add(new Microsoft.AspNetCore.Mvc.IgnoreAntiforgeryTokenAttribute());
+		});
+
 
 		//builder.Services.AddOpenApi();
 		//builder.Services.AddEndpointsApiExplorer();
@@ -41,29 +55,30 @@ public class Program {
 		builder.Services.AddScoped<IRentalService, RentalService>();
 
 		var app = builder.Build();
+		app.MapControllers();
 
 		app.MapAuthRoutes();
+
 		app.MapMovieRoutes();
 		app.MapRentalRoutes();
 
-		// Użyj OpenAPI
-		//if (app.Environment.IsDevelopment()) {
-		//	app.UseSwagger();
-		//	app.UseSwaggerUI(c => {
-		//		c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRental API v1");
-		//	});
-		//	app.MapOpenApi();
-		//	app.MapScalarApiReference();
-		//}
+		if (app.Environment.IsDevelopment()) {
+			app.UseSwagger();
+			app.UseSwaggerUI(c => {
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRental API v1");
+			});
+		}
 
 		await app.MigrateDbAsync();
-
-		app.UseHttpsRedirection();
+		app.UseStaticFiles();
 		app.UseRouting();
+		app.UseHttpsRedirection();
 		app.UseAuthentication();
 		app.UseAuthorization();
+
 
 
 		await app.RunAsync();
 	}
 }
+

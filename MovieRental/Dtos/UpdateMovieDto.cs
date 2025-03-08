@@ -8,4 +8,5 @@ public class UpdateMovieDto {
 	public DateOnly ReleaseYear { get; set; }
 	public int TotalCopies { get; set; }
 	public int AvailableCopies { get; set; }
+	public IFormFile? Image { get; set; }
 }

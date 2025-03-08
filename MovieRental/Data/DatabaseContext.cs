@@ -28,6 +28,10 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
             movie.Property(e => e.Title).IsRequired().HasMaxLength(100);
             movie.Property(e => e.Description).IsRequired();
             movie.Property(e => e.GenreId);
+            movie.Property(e => e.TotalCopies).IsRequired();
+            movie.Property(e => e.AvailableCopies).IsRequired();
+            movie.Property(e => e.Price).IsRequired();
+            movie.Property(e => e.ImageUrl).IsRequired();
             movie.Property(e => e.ReleaseYear)
                 .HasConversion(v => v.ToDateTime(TimeOnly.MinValue), v => DateOnly.FromDateTime(v))
                 .IsRequired();

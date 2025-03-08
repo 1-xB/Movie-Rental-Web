@@ -4,6 +4,7 @@ using Data;
 using Dtos;
 using Entity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Services;
 
@@ -33,31 +34,61 @@ public static class MovieEndpoints {
 			return movie is null ? Results.NotFound("Movie not found ") : Results.Ok(movie);
 		});
 
-		group.MapPost("/", [Authorize(Roles = "Admin")]
-			async (HttpContext httpContext, IAuthService authService, AddMovieDto newMovie,
-				DatabaseContext context) => {
-				var accessToken = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-				if (!authService.IsAccessTokenValid(accessToken)) {
-					return Results.Unauthorized();
-				}
 
-				var movie = new Movie {
-					Title = newMovie.Title,
-					Description = newMovie.Description,
-					GenreId = newMovie.GenreId,
-					ReleaseYear = newMovie.ReleaseYear,
-					TotalCopies = newMovie.TotalCopies,
-					AvailableCopies = newMovie.TotalCopies
-				};
-				await context.Movies.AddAsync(movie);
-				await context.SaveChangesAsync();
+		group.MapPost("/", [Authorize(Roles = "Admin")] [IgnoreAntiforgeryToken] async (HttpContext httpContext,
+		    IAuthService authService, [FromBody] AddMovieDto newMovie, DatabaseContext context) =>
+		{
+		    var accessToken = httpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+		    if (!authService.IsAccessTokenValid(accessToken))
+		    {
+		        return Results.Unauthorized();
+		    }
 
-				return Results.Ok(movie);
-			});
+		    var movie = new Movie
+		    {
+		        Title = newMovie.Title,
+		        Description = newMovie.Description,
+		        GenreId = newMovie.GenreId,
+		        ReleaseYear = newMovie.ReleaseYear,
+		        TotalCopies = newMovie.TotalCopies,
+		        AvailableCopies = newMovie.TotalCopies,
+		        Price = newMovie.Price
+		    };
 
+		    if (!string.IsNullOrEmpty(newMovie.ImageBase64))
+		    {
+		        string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+
+		        if (!Directory.Exists(uploadsFolder))
+		        {
+		            Directory.CreateDirectory(uploadsFolder);
+		        }
+
+		        string fileName = Guid.NewGuid() + Path.GetExtension(newMovie.ImageName);
+		        string filePath = Path.Combine(uploadsFolder, fileName);
+
+		        try
+		        {
+		            var base64Data = newMovie.ImageBase64.Split(',').Last();
+		            byte[] imageBytes = Convert.FromBase64String(base64Data);
+		            await File.WriteAllBytesAsync(filePath, imageBytes);
+
+		            movie.ImageUrl = $"/images/{fileName}";
+		        }
+		        catch (Exception ex)
+		        {
+		            // ignore
+		        }
+		    }
+
+		    await context.Movies.AddAsync(movie);
+		    await context.SaveChangesAsync();
+
+		    return Results.Ok(movie);
+		});
 		group.MapPut("/{id:int}", [Authorize(Roles = "Admin")]
 			async (HttpContext httpContext, IAuthService authService, int id, UpdateMovieDto newMovie,
-				DatabaseContext context) => {
+				DatabaseContext context, IWebHostEnvironment env) => {
 				var movie = await context.Movies.FindAsync(id);
 				if (movie is null) {
 					return Results.BadRequest("Movie with this id does not exist");
@@ -70,6 +101,29 @@ public static class MovieEndpoints {
 				movie.TotalCopies = newMovie.TotalCopies;
 				movie.AvailableCopies = newMovie.TotalCopies;
 				movie.Price = newMovie.Price;
+
+				if (newMovie.Image is not null && newMovie.Image.Length > 0) {
+					string uploadsFolder = Path.Combine(env.WebRootPath, "images"); // wwwroot/images
+					if (!Directory.Exists(uploadsFolder)) {
+						Directory.CreateDirectory(uploadsFolder);
+					}
+
+					string fileName = Guid.NewGuid() + Path.GetExtension(newMovie.Image.FileName);
+					string filePath = Path.Combine(uploadsFolder, fileName);
+
+					using (var fileStream = new FileStream(filePath, FileMode.Create)) {
+						await newMovie.Image.CopyToAsync(fileStream);
+					}
+
+					if (movie.ImageUrl != null) {
+						var oldImagePath = Path.Combine(env.WebRootPath, movie.ImageUrl.TrimStart('/'));
+						if (File.Exists(oldImagePath)) {
+							File.Delete(oldImagePath);
+						}
+					}
+
+					movie.ImageUrl = $"/images/{fileName}";
+				}
 
 				await context.SaveChangesAsync();
 

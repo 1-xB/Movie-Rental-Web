@@ -14,4 +14,7 @@ public class Movie {
 	public int TotalCopies { get; set; }
 	public int AvailableCopies { get; set; }
 	[JsonIgnore] public ICollection<Rentals> Rentals { get; set; } = new List<Rentals>();
+	public string ImageUrl {
+		get;
+		set; } = string.Empty;
 }

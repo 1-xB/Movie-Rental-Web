@@ -10,4 +10,5 @@ public class MovieModel {
 
 	public int TotalCopies { get; set; }
 	public int AvailableCopies { get; set; }
+	public string ImageUrl { get; set; }
 }
