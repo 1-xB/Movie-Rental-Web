@@ -193,4 +193,8 @@ h1:focus-visible {
 	opacity: 1;
 	pointer-events: auto;
 }
+.img-fluid {
+	max-width: 100%;
+	height: auto;
+}
 

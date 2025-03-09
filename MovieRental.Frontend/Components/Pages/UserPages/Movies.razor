@@ -47,11 +47,11 @@
 							<div class="card-body">
 								@if (!string.IsNullOrEmpty(movie.ImageUrl))
 								{
-									<img src="@($"{Http.BaseAddress}/{movie.ImageUrl}")" class="card-img-top mb-3" alt="Movie image" width="600" height="200">
+									<img src="@($"{Http.BaseAddress}/{movie.ImageUrl}")" class="card-img-top mb-3 img-fluid" alt="Movie image">
 								}
 								else
 								{
-									<img src="https://placehold.co/600x400" class="card-img-top mb-3" alt="Placeholder image">
+									<img src="https://placehold.co/600x400" class="card-img-top mb-3 img-fluid" alt="Placeholder image">
 								}
 								<br/>
 								<h5 class="card-title">@movie.Title - @movie.ReleaseYear</h5>
