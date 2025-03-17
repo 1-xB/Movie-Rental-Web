@@ -41,6 +41,9 @@
 			<div class="card shadow-sm mb-4">
 				<div class="card-header bg-white text-black">
 					<h1 class="card-title">@SearchedMovieModel.Title</h1>
+					<div class="d-flex justify-content-center">
+						<img src="@($"{Http.BaseAddress}/{SearchedMovieModel.ImageUrl}")" class="card-img-top" style="max-width: 50%; height: auto;" alt="Movie poster" />
+					</div>
 					<p class="card-text"><strong>Genre
 							:</strong> @Genres.Where(g => g.Id == SearchedMovieModel.GenreId).Select(g => g.Name).FirstOrDefault()
 					</p>

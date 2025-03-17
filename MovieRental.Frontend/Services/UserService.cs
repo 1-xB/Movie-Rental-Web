@@ -1,7 +1,9 @@
 ﻿namespace MovieRental.Frontend.Services;
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -57,8 +59,15 @@ public class UserService(
 
 			await protectedLocalStorage.SetAsync("accessToken", tokenResponse.AccessToken);
 			await protectedLocalStorage.SetAsync("refreshToken", tokenResponse.RefreshToken);
-			await protectedLocalStorage.SetAsync("username", user.UsernameOrMail);
-			provider.MarkUserAsAuthenticated(user.UsernameOrMail);
+			var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(tokenResponse.AccessToken);
+			var username = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+			if (username == null) {
+				await protectedLocalStorage.SetAsync("username", user.Username);
+			}
+			else {
+				await protectedLocalStorage.SetAsync("username", username);
+			}
+			provider.MarkUserAsAuthenticated(user.Username);
 			navigationManager.NavigateTo("/", true);
 			return "Success";
 		}

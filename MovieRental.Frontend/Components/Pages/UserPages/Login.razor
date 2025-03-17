@@ -3,6 +3,7 @@
 @using MovieRental.Frontend.Dtos
 @using MovieRental.Frontend.Models
 @inject UserService UserService
+@inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
 
@@ -84,10 +85,18 @@
 		ShowOverlay();
 		var user = new LoginUserDto
 		{
-			UsernameOrMail = LoginModel.Username,
+			Username = LoginModel.Username,
 			Password = LoginModel.Password
 		};
-		ServerMessage = await UserService.LoginUserAsync(user);
+		string message = await UserService.LoginUserAsync(user);
+		if (message == "Success")
+		{
+			navigationManager.NavigateTo("/");
+		}
+		else
+		{
+			ServerMessage = message;
+		}
 		HideOverlay();
 	}
 

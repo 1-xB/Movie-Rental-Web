@@ -40,8 +40,8 @@ public class AuthService(DatabaseContext context, IConfiguration configuration) 
 
 	public async Task<TokenResponseDto?> LoginAsync(UserLoginDto request) {
 		try {
-			var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.UsernameOrMail) ??
-			           await context.Users.FirstOrDefaultAsync(u => u.Mail == request.UsernameOrMail);
+			var user = await context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == request.Username.ToLower());
+
 			if (user is null) {
 				return null;
 			}

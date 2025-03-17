@@ -3,6 +3,7 @@
 @using MovieRental.Frontend.Dtos
 @using MovieRental.Frontend.Models
 @inject UserService UserService
+@inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
 
@@ -109,7 +110,15 @@
 				Mail = RegisterModel.Mail,
 				Password = RegisterModel.Password
 			};
-			ServerMessage = await UserService.RegisterUserAsync(user);
+			string message = await UserService.RegisterUserAsync(user);
+			if (message == "Success")
+			{
+				navigationManager.NavigateTo("/login");
+			}
+			else
+			{
+				ServerMessage = message;
+			}
 		}
 		catch (Exception ex)
 		{
