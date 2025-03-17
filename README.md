@@ -60,7 +60,7 @@ Here are some visuals of the application:
    ![Homepage](img/Homepage.png)
 
 4. **Movies:**
-   ![Movies](img/All movies.png)
+   ![Movies](img/Allmovies.png)
 
 5. **Genres:**
    ![Genres](img/Genres.png)
@@ -72,6 +72,6 @@ Here are some visuals of the application:
    ![Checkout](img/Checkout.png)
 
 8. **Rented Movies:**
-   ![Movie](img/Rented movies.png)
+   ![Movie](img/Rentedmovies.png)
 
 ---
