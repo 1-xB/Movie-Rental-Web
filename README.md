@@ -1,9 +1,5 @@
 # Movie-Rental-Web
 
-## Live Demo
-
-You can view the live version of the application [here](https://movierentalfrontend20250303195152.azurewebsites.net).
-
 ## Description
 
 **Movie-Rental-Web** is a comprehensive web application that enables users to browse, rent, and manage movies. It features a robust backend API and an intuitive frontend user interface, designed to provide a seamless movie rental experience.
