@@ -50,16 +50,28 @@
 
 Here are some visuals of the application:
 
-1. **Homepage:**
-   ![Homepage](img/Image1.png)
+1. **Register Page:**
+   ![Register Page](img/Register.png)
 
-2. **Movie List:**
-   ![Movie List](img/Image2.png)
+2. **Login Page:**
+   ![Login Page](img/Login.png)
 
-3. **Movie Rental:**
-   ![Movie Rental](img/Image3.png)
+3. **Homepage:**
+   ![Homepage](img/Homepage.png)
 
-4. **User Profile:**
-   ![User Profile](img/Image4.png)
+4. **Movies:**
+   ![Movies](img/All movies.png)
+
+5. **Genres:**
+   ![Genres](img/Genres.png)
+
+6. **Movie:**
+   ![Movie](img/Movie.png)
+
+7. **Checkout:**
+   ![Checkout](img/Checkout.png)
+
+8. **Rented Movies:**
+   ![Movie](img/Rented movies.png)
 
 ---
